@@ -48,7 +48,6 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AsyncForwardingAppenderTwo.cs" />
     <Compile Include="AsyncForwardingAppender.cs" />
     <Compile Include="RingBuffer.cs" />
     <Compile Include="Extensions.cs" />

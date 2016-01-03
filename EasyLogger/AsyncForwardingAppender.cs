@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading;
+    using System.Timers;
     using log4net.Appender;
     using log4net.Core;
     using log4net.Util;
@@ -13,15 +14,15 @@
     /// </summary>
     public sealed class AsyncForwardingAppender : ForwardingAppender
     {
-        private readonly object _locker = new object();
-        private LoggingEvent[] _flushBuffer;
-        private int _flushBufferIndex;
-        private Sequencer<LoggingEvent> _backgroundQueue;
-        private Timer _idleFlushTimer;
-        private DateTime _lastFlushTime;
-        private TimeSpan _idleTimeThreshold = TimeSpan.FromSeconds(1);
         private const string IdleFlushFlag = "Idle-2B80D553-5676-4B9B-884B-11D500CBA877";
         private const string ClosingFlushFlag = "Closing-BBD3D431-3886-4221-8843-0211F2EAB2EF";
+        private readonly TimeSpan _idleTimeThreshold;
+        private readonly LoggingEvent[] _flushBuffer;
+        private readonly Sequencer<LoggingEvent> _backgroundQueue;
+        private readonly Timer _idleFlushTimer;
+
+        private int _flushBufferIndex;
+        private DateTime _lastFlushTime;
 
         /// <summary>
         /// Specifies the queue size threshold at which any new items will
@@ -50,32 +51,36 @@
             }
         }
 
-        public override void ActivateOptions()
+        /// <summary>
+        /// Creates an instance of the <see cref="AsyncForwardingAppender"/>
+        /// </summary>
+        public AsyncForwardingAppender()
         {
-            lock (_locker)
-            {
-                _flushBuffer = new LoggingEvent[FlushThreshold];
-                _backgroundQueue = new Sequencer<LoggingEvent>(LogImpl, QueueSize);
-                _backgroundQueue.OnException += BackgroundQueueOnException;
+            _flushBuffer = new LoggingEvent[FlushThreshold];
+            _backgroundQueue = new Sequencer<LoggingEvent>(LogImpl, QueueSize);
+            _backgroundQueue.OnException += BackgroundQueueOnException;
 
-                _idleFlushTimer = new Timer(_idleTimeThreshold.TotalSeconds * 1000);
-                _idleFlushTimer.Elapsed += (sender, args) =>
-                {
-                    SignalManualFlush(IdleFlushFlag);
-                };
-                
-                base.ActivateOptions();
+            _idleTimeThreshold = TimeSpan.FromMilliseconds(500);
+            _idleFlushTimer = new Timer(_idleTimeThreshold.TotalSeconds * 1000);
+            _idleFlushTimer.Elapsed += InvokeFlushIfIdle;
+            _idleFlushTimer.Start();
 
-                if (Lossy) { LogLossyWarning(); }
-                _idleFlushTimer.Start();
-            }
+            if (Lossy) { LogLossyWarning(); }
         }
 
+        /// <summary>
+        /// Appends an array of <see cref="LoggingEvent"/>
+        /// </summary>
+        /// <param name="loggingEvents">The log events to append</param>
         protected override void Append(LoggingEvent[] loggingEvents)
         {
             Array.ForEach(loggingEvents, Append);
         }
 
+        /// <summary>
+        /// Appends a single <see cref="LoggingEvent"/>
+        /// </summary>
+        /// <param name="loggingEvent">The log event to append</param>
         protected override void Append(LoggingEvent loggingEvent)
         {
             if (Lossy && _backgroundQueue.PendingCount == QueueSize) { return; }
@@ -84,19 +89,20 @@
             _backgroundQueue.Enqueue(loggingEvent);
         }
 
+        /// <summary>
+        /// Ensures that all pending logging events are flushed out before exiting
+        /// </summary>
         protected override void OnClose()
         {
-            lock (_locker)
-            {
-                _idleFlushTimer.Dispose();
+            _idleFlushTimer.Elapsed -= InvokeFlushIfIdle;
+            _idleFlushTimer.Dispose();
 
-                SignalManualFlush(ClosingFlushFlag);
+            SignalManualFlush(ClosingFlushFlag);
 
-                _backgroundQueue.Shutdown();
-                _backgroundQueue.OnException -= BackgroundQueueOnException;
+            _backgroundQueue.Shutdown();
+            _backgroundQueue.OnException -= BackgroundQueueOnException;
 
-                base.OnClose();
-            }
+            base.OnClose();
         }
 
         private void LogImpl(LoggingEvent logEvent)
@@ -104,14 +110,11 @@
             FlushType type;
             if (IsManualFlush(logEvent, out type))
             {
-                if (type == FlushType.Idle)
-                {
-                    if (IsIdle) { DoFlush(true); }
-                }
-                else if (type == FlushType.Closing)
-                {
-                    DoFlush(true);
+                DoFlush(true);
 
+                if (type == FlushType.Closing)
+                {
+                    // Flush any pending logging events before this signal
                     var pendingEvents = _backgroundQueue.PendingItems;
                     if (pendingEvents.Length > 0) { base.Append(pendingEvents); }
                 }
@@ -119,7 +122,7 @@
             }
 
             if (_flushBufferIndex == FlushThreshold) { DoFlush(false); }
-            
+
             _flushBuffer[_flushBufferIndex++] = logEvent;
         }
 
@@ -164,7 +167,7 @@
         private void DoFlush(bool isPartialFlush)
         {
             if (_flushBufferIndex == 0) { return; }
-            
+
             LoggingEvent[] eventsToAppend;
 
             // Partial flush due to idle detection or closing
@@ -183,6 +186,12 @@
 
             Array.Clear(_flushBuffer, 0, _flushBuffer.Length);
             _flushBufferIndex = 0;
+        }
+
+        private void InvokeFlushIfIdle(object sender, ElapsedEventArgs elapsedEventArgs)
+        {
+            if (!IsIdle) { return; }
+            SignalManualFlush(IdleFlushFlag);
         }
 
         private void SignalManualFlush(string flag)
