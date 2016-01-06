@@ -60,8 +60,7 @@
 
                 while (sw.Elapsed < Duration)
                 {
-                    Interlocked.Increment(ref localCounter);
-                    _logger.DebugFormat("Counter is: {0}", localCounter);
+                    _logger.DebugFormat("Counter is: {0}", ++localCounter);
                 }
 
                 return localCounter;
