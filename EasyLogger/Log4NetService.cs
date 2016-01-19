@@ -10,8 +10,11 @@
     /// </summary>
     public sealed class Log4NetService : ILogService
     {
-        private static readonly object Locker = new object();
         private static readonly Lazy<Log4NetService> Lazy = new Lazy<Log4NetService>(() => new Log4NetService(), true);
+
+        /// <summary>
+        /// Returns a single instance of the <see cref="Log4NetService"/>
+        /// </summary>
         public static Log4NetService Instance => Lazy.Value;
 
         /// <summary>
@@ -25,7 +28,13 @@
         /// <exception cref="FileNotFoundException">Valid Log4net config file not found</exception>
         private Log4NetService()
         {
-            var log4NetConfigDir = AppDomain.CurrentDomain.RelativeSearchPath ?? AppDomain.CurrentDomain.BaseDirectory;
+            var log4NetConfigDir = AppDomain.CurrentDomain.RelativeSearchPath;
+
+            if (string.IsNullOrWhiteSpace(log4NetConfigDir))
+            {
+                log4NetConfigDir = AppDomain.CurrentDomain.BaseDirectory;
+            }
+
             var defaultConfigFile = new FileInfo(Path.Combine(log4NetConfigDir, "log4net.config"));
             ConfigureImpl(defaultConfigFile);
         }
@@ -84,13 +93,10 @@
 
         private static void ConfigureImpl(FileInfo configFile)
         {
-            lock (Locker)
-            {
-                if (configFile == null) { throw new ArgumentException("Config file cannot be null", nameof(configFile)); }
-                if (!configFile.Exists) { throw new FileNotFoundException("Could not find a valid log4net configuration file at: ", configFile.FullName); }
+            if (configFile == null) { throw new ArgumentException("Config file cannot be null", nameof(configFile)); }
+            if (!configFile.Exists) { throw new FileNotFoundException("Could not find a valid log4net configuration file", configFile.FullName); }
 
-                XmlConfigurator.ConfigureAndWatch(configFile);
-            }
+            XmlConfigurator.ConfigureAndWatch(configFile);
         }
     }
 }

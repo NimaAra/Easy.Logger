@@ -5,25 +5,34 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    class Program
+    internal class Program
     {
-        private static readonly TimeSpan Duration = TimeSpan.FromSeconds(10);
+        private readonly TimeSpan _duration;
         private readonly ILogger _logger;
 
-        static void Main()
+        private static void Main(string[] args)
         {
-            new Program().Run();
+            var duration = TimeSpan.FromSeconds(10);
+
+            if (args.Length > 0)
+            {
+                var seconds = int.Parse(args[0]);
+                duration = TimeSpan.FromSeconds(seconds);
+            }
+
+            new Program(duration).Run();
         }
 
-        public Program()
+        public Program(TimeSpan duration)
         {
+            _duration = duration;
             _logger = Log4NetService.Instance.GetLogger<Program>();
         }
 
         private void Run()
         {
             _logger.Info("Benchmarking starting");
-            TestMultiThreading();
+            TestThroughput();
             _logger.Warn("Benchmarking ended");
 
             Console.WriteLine("Gen 0: {0}", GC.CollectionCount(0));
@@ -37,7 +46,7 @@
 
             var sw = Stopwatch.StartNew();
             long counter = 0;
-            while (sw.Elapsed < Duration)
+            while (sw.Elapsed < _duration)
             {
                 counter++;
                 _logger.DebugFormat("Counter is: {0}", counter);
@@ -58,7 +67,7 @@
                 var localCounter = 0;
                 var sw = Stopwatch.StartNew();
 
-                while (sw.Elapsed < Duration)
+                while (sw.Elapsed < _duration)
                 {
                     _logger.DebugFormat("Counter is: {0}", ++localCounter);
                 }
@@ -71,11 +80,11 @@
             Parallel.For(
                 0,
                 WorkerCount,
-                new ParallelOptions {MaxDegreeOfParallelism = WorkerCount},
+                new ParallelOptions { MaxDegreeOfParallelism = WorkerCount },
                 () => 0,
-                (i, state, partial)  => action(),
+                (i, state, partial) => action(),
                 partialCounter => Interlocked.Add(ref totalCounter, partialCounter));
-            
+
             Console.WriteLine("Counter reached: {0:n0}, Time Taken: {1}", totalCounter, totalSw.Elapsed);
         }
 
@@ -85,7 +94,7 @@
 
             var sw = Stopwatch.StartNew();
             long counter = 0;
-            while (sw.Elapsed < Duration)
+            while (sw.Elapsed < _duration)
             {
                 counter++;
                 _logger.DebugFormat("Counter is: {0}", counter);

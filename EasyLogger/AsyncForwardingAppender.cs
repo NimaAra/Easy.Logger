@@ -64,7 +64,11 @@
             _idleFlushTimer = new Timer(_idleTimeThreshold.TotalSeconds * 1000);
             _idleFlushTimer.Elapsed += InvokeFlushIfIdle;
             _idleFlushTimer.Start();
+        }
 
+        public override void ActivateOptions()
+        {
+            base.ActivateOptions();
             if (Lossy) { LogLossyWarning(); }
         }
 
@@ -108,7 +112,7 @@
         private void LogImpl(LoggingEvent logEvent)
         {
             FlushType type;
-            if (IsManualFlush(logEvent, out type))
+            if (IsPreMatureFlush(logEvent, out type))
             {
                 DoFlush(true);
 
@@ -140,7 +144,7 @@
             Append(warning);
         }
 
-        private static bool IsManualFlush(LoggingEvent logEvent, out FlushType type)
+        private static bool IsPreMatureFlush(LoggingEvent logEvent, out FlushType type)
         {
             if (logEvent.Level != Level.Notice)
             {
