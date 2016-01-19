@@ -36,14 +36,22 @@
             };
             process.ErrorDataReceived += (sender, args) =>
             {
-                if (args?.Data == null) { return; }
+                var errMsg = "[Process Error] - ";
+
+                if (args?.Data != null)
+                {
+                    errMsg += args.Data;
+                } else
+                {
+                    errMsg += "No data available";
+                }
 
                 lock (locker)
                 {
-                    outputMessages.Add(args.Data);
+                    outputMessages.Add(errMsg);
                 }
 
-                Debug.WriteLine("Process Error: " + args.Data);
+                Console.WriteLine(errMsg);
             };
 
             process.Start();
