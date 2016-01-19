@@ -8,6 +8,7 @@
     {
         private readonly ILog _logger;
 
+        [DebuggerStepThrough]
         internal Log4NetLogger(ILog logger)
         {
             _logger = logger;
