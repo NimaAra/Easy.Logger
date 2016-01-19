@@ -29,9 +29,9 @@
                 process.WaitForExit(500);
 
                 outputMessages.ShouldNotBeEmpty();
-                outputMessages.ShouldContain(s => s == "Unhandled Exception: System.IO.FileNotFoundException: Could not find a valid log4net configuration file");
+                outputMessages.ShouldContain(s => s == "[Process Error] - Unhandled Exception: System.IO.FileNotFoundException: Could not find a valid log4net configuration file");
 
-                process.Kill();
+                if (!process.HasExited) { process.Kill(); }
             }
 
             Thread.Sleep(1000);
@@ -55,12 +55,11 @@
             var logFile = new FileInfo(Path.Combine(extractedApp.FullName, _logfileName));
             logFile.Exists.ShouldBeFalse();
 
-            var outputMessages = new List<string>();
-            using (var process = ProcessHelper.GetProcess(pathToSampleApp, outputMessages))
+            var errorMessages = new List<string>();
+            using (var process = ProcessHelper.GetProcess(pathToSampleApp, errorMessages))
             {
-                process.WaitForExit(500);
-
-                outputMessages.ShouldBeEmpty();
+                process.WaitForExit();
+                process.ExitCode.ShouldBe(0);
 
                 logFile.Refresh();
                 logFile.Exists.ShouldBeTrue();
