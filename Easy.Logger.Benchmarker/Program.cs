@@ -1,4 +1,4 @@
-﻿namespace EasyLogger.Benchmarker
+﻿namespace Easy.Logger.Benchmarker
 {
     using System;
     using System.Diagnostics;

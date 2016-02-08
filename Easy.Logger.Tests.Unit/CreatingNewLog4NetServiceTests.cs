@@ -1,4 +1,4 @@
-﻿namespace EasyLogger.Tests.Unit
+﻿namespace Easy.Logger.Tests.Unit
 {
     using System;
     using System.Collections.Generic;
@@ -6,15 +6,15 @@
     using System.IO.Compression;
     using System.Text;
     using System.Threading;
-    using EasyLogger.Tests.Unit.Helpers;
+    using Easy.Logger.Tests.Unit.Helpers;
     using NUnit.Framework;
     using Shouldly;
-    using Log4NetService = EasyLogger.Log4NetService;
+    using Log4NetService = Easy.Logger.Log4NetService;
 
     [TestFixture]
     public sealed class CreatingNewLog4NetServiceTests
     {
-        private readonly string _sampleAppName = "EasyLogger.Tests.SampleLoggerApp.exe";
+        private readonly string _sampleAppName = "Easy.Logger.Tests.SampleLoggerApp.exe";
         private readonly string _logfileName = "--LOGFILE--.log";
 
         [Test]
@@ -172,7 +172,7 @@
                          <appender-ref ref=""Default""/>
                          </root>
                      
-                         <appender name=""Default"" type=""EasyLogger.AsyncForwardingAppender"">
+                         <appender name=""Default"" type=""Easy.Logger.AsyncForwardingAppender"">
                          <appender-ref ref=""RollingFile""/>
                          </appender>
                      

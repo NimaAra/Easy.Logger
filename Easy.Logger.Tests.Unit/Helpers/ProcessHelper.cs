@@ -1,5 +1,6 @@
-﻿namespace EasyLogger.Tests.Unit.Helpers
+﻿namespace Easy.Logger.Tests.Unit.Helpers
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
 

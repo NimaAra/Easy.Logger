@@ -1,4 +1,4 @@
-﻿namespace EasyLogger
+﻿namespace Easy.Logger
 {
     using System;
 

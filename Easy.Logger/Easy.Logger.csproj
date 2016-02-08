@@ -8,8 +8,8 @@
     <ProjectGuid>{4FF0E08A-3D8D-4474-985A-735ECD13DD92}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EasyLogger</RootNamespace>
-    <AssemblyName>EasyLogger</AssemblyName>
+    <RootNamespace>Easy.Logger</RootNamespace>
+    <AssemblyName>Easy.Logger</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

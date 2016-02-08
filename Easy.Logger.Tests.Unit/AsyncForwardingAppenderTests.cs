@@ -1,4 +1,4 @@
-﻿namespace EasyLogger.Tests.Unit
+﻿namespace Easy.Logger.Tests.Unit
 {
     using System.Collections.Generic;
     using System.Threading;
