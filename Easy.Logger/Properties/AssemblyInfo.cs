@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 
-[assembly: AssemblyTitle("EasyLogger")]
+[assembly: AssemblyTitle("Easy.Logger")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 
 [assembly: AssemblyVersion("1.0.0.0")]
