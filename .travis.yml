@@ -1,0 +1,6 @@
+language: csharp
+solution: Easy.Logger.sln
+install:
+  - nuget restore solution-name.sln
+  - nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
+  - mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./Easy.Logger.Tests.Unit/bin/Release/Easy.Logger.Tests.Unit.dll  
