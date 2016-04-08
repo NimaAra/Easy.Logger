@@ -9,8 +9,12 @@
     using Timer = System.Timers.Timer;
 
     /// <summary>
+    /// An appender which batches the log events and asynchronously forwards them to the configured appenders.
+    /// <seealso href="www.nimaara.com/2016/01/01/high-performance-logging-log4net/"/>
+    /// <remarks>
     /// This asynchronous forwarder uses the following fix flags:
     /// FixFlags.ThreadName | FixFlags.Message | FixFlags.Exception;
+    /// </remarks>
     /// </summary>
     public sealed class AsyncForwardingAppender : ForwardingAppender
     {
@@ -66,6 +70,9 @@
             _idleFlushTimer.Start();
         }
 
+        /// <summary>
+        /// Activates the options for this appender.
+        /// </summary>
         public override void ActivateOptions()
         {
             base.ActivateOptions();
@@ -208,7 +215,7 @@
             _backgroundQueue.Enqueue(logEvent);
         }
 
-        private void BackgroundQueueOnException(object sender, SequencerEventArgs args)
+        private void BackgroundQueueOnException(object sender, SequencerExceptionEventArgs args)
         {
             LogLog.Error(GetType(), "An exception occurred while processing LogEvents.", args.Exception);
         }

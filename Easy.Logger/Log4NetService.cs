@@ -25,7 +25,7 @@
         /// (Console, WinForm, etc). <c>RelativeSearchPath</c> IS NOT NULL if the 
         /// calling assembly is a web hosted application i.e. a WebSite
         /// </summary>
-        /// <exception cref="FileNotFoundException">Valid Log4net config file not found</exception>
+        /// <exception cref="FileNotFoundException">Thrown when a valid <c>log4net.config</c> file is not found</exception>
         private Log4NetService()
         {
             var log4NetConfigDir = AppDomain.CurrentDomain.RelativeSearchPath;
@@ -40,41 +40,46 @@
         }
 
         /// <summary>
-        /// Configures the <see cref="Log4NetService"/> using the <paramref name="configFile"/>.
-        /// </summary>
+        /// Provides an override to configures the <see cref="Log4NetService"/> using the <paramref name="configFile"/>.
+        /// </summary> 
         /// <param name="configFile">Path to a valid log4net config file</param>
         /// <exception cref="ArgumentException">Thrown when log4net Config file is null</exception>
-        /// <exception cref="FileNotFoundException">Thrown when a valid Log4net config file is not found</exception>
+        /// <exception cref="FileNotFoundException">Thrown when a valid <c>log4net.config</c> file is not found</exception>
+        /// <remarks>
+        /// If this method is not used, the <see cref="Log4NetService"/> will be configured by looking for a 
+        /// default <c>log4net.config</c> file in the executing directory.
+        /// </remarks>
         public void Configure(FileInfo configFile)
         {
             ConfigureImpl(configFile);
         }
 
         /// <summary>
-        /// Returns an <see cref="ILogger"/> for the given <paramref name="type"/>
+        /// Obtains an <see cref="ILogger"/> for the given <paramref name="loggerType"/>.
         /// </summary>
-        /// <param name="type">The type for which an <see cref="ILogger"/> should be returned</param>
+        /// <param name="loggerType">The <see cref="Type"/> for which an <see cref="ILogger"/> should be returned</param>
         /// <returns>The <see cref="ILogger"/></returns>
         [DebuggerStepThrough]
-        public ILogger GetLogger(Type type)
+        public ILogger GetLogger(Type loggerType)
         {
-            return new Log4NetLogger(log4net.LogManager.GetLogger(type));
+            return new Log4NetLogger(log4net.LogManager.GetLogger(loggerType));
         }
 
         /// <summary>
-        /// Returns an <see cref="ILogger"/> for the given <paramref name="name"/>
+        /// Obtains an <see cref="ILogger"/> for the given <paramref name="loggerName"/>.
         /// </summary>
-        /// <param name="name">The name for which an <see cref="ILogger"/> should be returned</param>
+        /// <param name="loggerName">The name for which an <see cref="ILogger"/> should be returned</param>
         /// <returns>The <see cref="ILogger"/></returns>
         [DebuggerStepThrough]
-        public ILogger GetLogger(string name)
+        public ILogger GetLogger(string loggerName)
         {
-            return new Log4NetLogger(log4net.LogManager.GetLogger(name));
+            return new Log4NetLogger(log4net.LogManager.GetLogger(loggerName));
         }
 
         /// <summary>
-        /// Returns an <see cref="ILogger"/> for the given <typeparamref name="T"/>
+        /// Obtains an <see cref="ILogger"/> for the given <typeparamref name="T"/>.
         /// </summary>
+        /// <typeparam name="T">The type for which an <see cref="ILogger"/> should be returned</typeparam>
         /// <returns>The <see cref="ILogger"/></returns>
         [DebuggerStepThrough]
         public ILogger GetLogger<T>()

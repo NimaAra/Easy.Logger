@@ -5,11 +5,11 @@
     using System.IO;
     using System.IO.Compression;
     using System.Text;
-    using System.Threading;
-    using Easy.Logger.Tests.Unit.Helpers;
+    using System.Threading.Tasks;
+    using Helpers;
     using NUnit.Framework;
     using Shouldly;
-    using Log4NetService = Easy.Logger.Log4NetService;
+    using Log4NetService = Log4NetService;
 
     [TestFixture]
     public sealed class CreatingNewLog4NetServiceTests
@@ -18,7 +18,7 @@
         private readonly string _logfileName = "--LOGFILE--.log";
 
         [Test]
-        public void When_creating_a_log4net_service_with_no_default_configuration()
+        public async Task When_creating_a_log4net_service_with_no_default_configuration()
         {
             var extractedApp = ExtractSampleApp();
             var pathToSampleApp = Path.Combine(extractedApp.FullName, _sampleAppName);
@@ -34,12 +34,12 @@
                 if (!process.HasExited) { process.Kill(); }
             }
 
-            Thread.Sleep(1000);
+            await Task.Delay(TimeSpan.FromSeconds(2));
             extractedApp.Delete(true);
         }
 
         [Test]
-        public void When_creating_a_log4net_service_with_default_configuration()
+        public async Task When_creating_a_log4net_service_with_default_configuration()
         {
             var extractedApp = ExtractSampleApp();
             var pathToSampleApp = Path.Combine(extractedApp.FullName, _sampleAppName);
@@ -70,12 +70,12 @@
                 entries[1].ShouldContain(" [WARN ] [ 1] Program - I am done logging!");
             }
 
-            Thread.Sleep(1000);
+            await Task.Delay(TimeSpan.FromSeconds(2));
             extractedApp.Delete(true);
         }
 
         [Test]
-        public void When_creating_a_log4net_service_with_default_configuration_and_then_confuguring_it_again()
+        public async Task When_creating_a_log4net_service_with_default_configuration_and_then_confuguring_it_again()
         {
             var baseDirectory = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
 
@@ -141,6 +141,8 @@
             newLogFileContent.ShouldContain("CreatingNewLog4NetServiceTests - I am in the new log file.");
             newerLogFileContent.ShouldContain("CreatingNewLog4NetServiceTests - I am in the newer log file.");
 
+            await Task.Delay(TimeSpan.FromSeconds(2));
+            
             log4NetConfigFile.Delete();
             newConfigFile.Delete();
             defaultLogFile.Delete();

@@ -38,6 +38,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>bin\Release\Easy.Logger.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
@@ -49,7 +50,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AsyncForwardingAppender.cs" />
-    <Compile Include="RingBuffer.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="ILogService.cs" />

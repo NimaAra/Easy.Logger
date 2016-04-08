@@ -4,6 +4,9 @@
     using System.Threading;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// A set of extension methods to make things easier
+    /// </summary>
     public static class Extensions
     {
         /// <summary>

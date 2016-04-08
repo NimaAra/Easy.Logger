@@ -58,7 +58,6 @@
     <Compile Include="Helpers\ProcessHelper.cs" />
     <Compile Include="CreatingNewLog4NetServiceTests.cs" />
     <Compile Include="Log4NetLoggerTests.cs" />
-    <Compile Include="RingBufferTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Easy.Logger\Easy.Logger.csproj">

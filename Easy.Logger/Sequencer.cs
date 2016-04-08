@@ -4,6 +4,10 @@
     using System.Collections.Concurrent;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// A single worker implementation of the <c>Producer-Consumer</c> pattern.
+    /// </summary>
+    /// <typeparam name="T">The type of the object to be produced/consumed</typeparam>
     public sealed class Sequencer<T>
     {
         private readonly BlockingCollection<T> _queue;
@@ -20,8 +24,10 @@
         /// Creates an instance of <see cref="Sequencer{T}"/>
         /// </summary>
         /// <param name="consumer">The action to be executed when consuming the item.</param>
-        /// <param name="boundedCapacity">The bounded size of the queue.
-        /// Any more items added will block until there is more space available.</param>
+        /// <param name="boundedCapacity">
+        /// The bounded size of the queue.
+        /// Any more items added will block until there is more space available.
+        /// </param>
         public Sequencer(Action<T> consumer, int boundedCapacity)
             : this(boundedCapacity, consumer)
         {
@@ -55,7 +61,7 @@
         /// <summary>
         /// Thrown when the <see cref="_worker"/> throws an exception.
         /// </summary>
-        public event EventHandler<SequencerEventArgs> OnException;
+        public event EventHandler<SequencerExceptionEventArgs> OnException;
 
         /// <summary>
         /// Adds the specified item to the <see cref="Sequencer{T}"/>. 
@@ -141,7 +147,7 @@
                 var task = new Task(work, TaskCreationOptions.LongRunning);
                 task.HandleExceptions(e =>
                 {
-                    OnException.Raise(this, new SequencerEventArgs(new SequencerException("Exception occurred.", e)));
+                    OnException.Raise(this, new SequencerExceptionEventArgs(new SequencerException("Exception occurred.", e)));
                 });
 
                 _worker = task;
@@ -150,22 +156,48 @@
         }
     }
 
-    public sealed class SequencerEventArgs : EventArgs
+    /// <summary>
+    /// This class used as a container for when an <see cref="System.Exception"/> 
+    /// is raised by the <see cref="Sequencer{T}"/>
+    /// </summary>
+    public sealed class SequencerExceptionEventArgs : EventArgs
     {
-        public SequencerEventArgs(SequencerException e)
+        /// <summary>
+        /// Creates an instance of the <see cref="Sequencer{T}"/>
+        /// </summary>
+        /// <param name="e">The <see cref="System.Exception"/></param>
+        public SequencerExceptionEventArgs(SequencerException e)
         {
             Exception = e;
         }
 
+        /// <summary>
+        /// The <see cref="System.Exception"/> raised by the <see cref="Sequencer{T}"/>.
+        /// </summary>
         public SequencerException Exception { get; }
     }
 
+    /// <summary>
+    /// The <see cref="System.Exception"/> thrown by the <see cref="Sequencer{T}"/>.
+    /// </summary>
     public sealed class SequencerException : Exception
     {
+        /// <summary>
+        /// Creates an instance of the <see cref="Sequencer{T}"/>.
+        /// </summary>
         public SequencerException() { }
 
+        /// <summary>
+        /// Creates an instance of the <see cref="Sequencer{T}"/>.
+        /// </summary>
+        /// <param name="message">The message for the <see cref="Exception"/></param>
         public SequencerException(string message) : base(message) { }
 
+        /// <summary>
+        /// Creates an instance of the <see cref="Sequencer{T}"/>.
+        /// </summary>
+        /// <param name="message">The message for the <see cref="Exception"/></param>
+        /// <param name="innerException">The inner exception</param>
         public SequencerException(string message, Exception innerException) : base(message, innerException) { }
     }
 }
