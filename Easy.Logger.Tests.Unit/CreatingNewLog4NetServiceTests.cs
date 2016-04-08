@@ -26,7 +26,7 @@
             var outputMessages = new List<string>();
             using (var process = ProcessHelper.GetProcess(pathToSampleApp, outputMessages))
             {
-                process.WaitForExit(500);
+                process.WaitForExit(1000);
 
                 outputMessages.ShouldNotBeEmpty();
                 outputMessages.ShouldContain(s => s == "[Process Error] - Unhandled Exception: System.IO.FileNotFoundException: Could not find a valid log4net configuration file");
