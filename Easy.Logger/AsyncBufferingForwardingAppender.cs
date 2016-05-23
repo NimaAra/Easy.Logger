@@ -34,7 +34,7 @@
         public AsyncBufferingForwardingAppender()
         {
             _sequencer = new Sequencer<Action>(action => action(), 1);
-            _sequencer.OnException += SequencerOnException;
+            _sequencer.OnException += OnSequencerException;
 
             _idleTimeThreshold = TimeSpan.FromMilliseconds(500);
             _idleFlushTimer = new Timer(_idleTimeThreshold.TotalSeconds * 1000);
@@ -57,7 +57,14 @@
         /// <param name="events">The events that need to be forwarded</param>
         protected override void SendBuffer(LoggingEvent[] events)
         {
-            _sequencer.Enqueue(() => base.SendBuffer(events));
+            if (!_sequencer.ShutdownRequested)
+            {
+                _sequencer.Enqueue(() => base.SendBuffer(events));
+            } else
+            {
+                base.SendBuffer(events);
+            }
+            
             _lastFlushTime = DateTime.UtcNow;
         }
 
@@ -69,14 +76,15 @@
             _idleFlushTimer.Elapsed -= InvokeFlushIfIdle;
             _idleFlushTimer.Dispose();
 
-            Flush();
-
             _sequencer.Shutdown();
-            _sequencer.OnException -= SequencerOnException;
+            _sequencer.OnException -= OnSequencerException;
 
             base.OnClose();
         }
 
+        /// <summary>
+        /// This only flushes if <see cref="BufferingAppenderSkeleton.Lossy"/> is <c>False</c>.
+        /// </summary>
         private void InvokeFlushIfIdle(object sender, ElapsedEventArgs elapsedEventArgs)
         {
             if (!IsIdle) { return; }
@@ -102,7 +110,7 @@
             Lossy = true;
         }
 
-        private void SequencerOnException(object sender, SequencerExceptionEventArgs args)
+        private void OnSequencerException(object sender, SequencerExceptionEventArgs args)
         {
             LogLog.Error(GetType(), "An exception occurred while processing LogEvents.", args.Exception);
         }

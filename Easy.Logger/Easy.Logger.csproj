@@ -50,7 +50,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AsyncBufferingForwardingAppender.cs" />
-    <Compile Include="AsyncForwardingAppender.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="ILogService.cs" />

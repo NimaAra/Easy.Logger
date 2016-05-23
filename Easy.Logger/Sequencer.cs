@@ -59,6 +59,11 @@
         public T[] PendingItems => _queue.ToArray();
 
         /// <summary>
+        /// Gets whether <see cref="Sequencer{T}"/> has started to shutdown.
+        /// </summary>
+        public bool ShutdownRequested => _queue.IsAddingCompleted;
+
+        /// <summary>
         /// Thrown when the <see cref="_worker"/> throws an exception.
         /// </summary>
         public event EventHandler<SequencerExceptionEventArgs> OnException;
