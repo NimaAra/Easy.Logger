@@ -54,7 +54,7 @@
     <Reference Include="System.IO.Compression.FileSystem" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AsyncForwardingAppenderTests.cs" />
+    <Compile Include="AsyncBufferingForwardingAppenderTests.cs" />
     <Compile Include="Helpers\ProcessHelper.cs" />
     <Compile Include="CreatingNewLog4NetServiceTests.cs" />
     <Compile Include="Log4NetLoggerTests.cs" />

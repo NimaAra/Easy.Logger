@@ -9,7 +9,7 @@
     using Shouldly;
 
     [TestFixture]
-    public sealed class AsyncForwardingAppenderTests
+    public sealed class AsyncBufferingForwardingAppenderTests
     {
         [Test]
         public void When_testing_a_non_lossy_forwarder()

@@ -174,7 +174,7 @@
                          <appender-ref ref=""Default""/>
                          </root>
                      
-                         <appender name=""Default"" type=""Easy.Logger.AsyncForwardingAppender"">
+                         <appender name=""Default"" type=""Easy.Logger.AsyncBufferingForwardingAppender"">
                          <appender-ref ref=""RollingFile""/>
                          </appender>
                      

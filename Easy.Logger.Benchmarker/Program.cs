@@ -33,6 +33,8 @@
         {
             _logger.Info("Benchmarking starting");
             TestThroughput();
+//            TestMultiThreading();
+//            TestIdle();
             _logger.Warn("Benchmarking ended");
 
             Console.WriteLine("Gen 0: {0}", GC.CollectionCount(0));
