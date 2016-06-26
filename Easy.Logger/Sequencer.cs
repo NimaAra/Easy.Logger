@@ -188,18 +188,18 @@
     public sealed class SequencerException : Exception
     {
         /// <summary>
-        /// Creates an instance of the <see cref="Sequencer{T}"/>.
+        /// Creates an instance of the <see cref="SequencerException"/>.
         /// </summary>
         public SequencerException() { }
 
         /// <summary>
-        /// Creates an instance of the <see cref="Sequencer{T}"/>.
+        /// Creates an instance of the <see cref="SequencerException"/>.
         /// </summary>
         /// <param name="message">The message for the <see cref="Exception"/></param>
         public SequencerException(string message) : base(message) { }
 
         /// <summary>
-        /// Creates an instance of the <see cref="Sequencer{T}"/>.
+        /// Creates an instance of the <see cref="SequencerException"/>.
         /// </summary>
         /// <param name="message">The message for the <see cref="Exception"/></param>
         /// <param name="innerException">The inner exception</param>
