@@ -198,5 +198,33 @@
             _logger.IsFatalEnabled.ShouldBeFalse();
             _mockedLogger.Verify(l => l.IsFatalEnabled, Times.Once);
         }
+
+        [Test]
+        public void When_logging_using_scopped_logger()
+        {
+            // First try with Debug
+            using (_logger.GetScopedLogger("Foo", LogLevel.Debug))
+            {
+                _mockedLogger.Verify(l => l.Debug("[-BEGIN---> Foo]"), Times.Once);
+
+                _logger.WarnFormat("bar {0}", "is closed");
+
+                _mockedLogger.Verify(l => l.WarnFormat("bar {0}", "is closed"), Times.Once);
+            }
+
+            _mockedLogger.Verify(l => l.Debug("[--END----> Foo]"), Times.Once);
+
+            // Now try Fatal
+            using (_logger.GetScopedLogger("DummyScope", LogLevel.Fatal))
+            {
+                _mockedLogger.Verify(l => l.Fatal("[-BEGIN---> DummyScope]"), Times.Once);
+
+                _logger.WarnFormat("bar {0}", "is opened");
+
+                _mockedLogger.Verify(l => l.WarnFormat("bar {0}", "is opened"), Times.Once);
+            }
+
+            _mockedLogger.Verify(l => l.Fatal("[--END----> DummyScope]"), Times.Once);
+        }
     }
 }

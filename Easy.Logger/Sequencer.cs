@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Concurrent;
+    using System.Runtime.Serialization;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -185,6 +186,7 @@
     /// <summary>
     /// The <see cref="System.Exception"/> thrown by the <see cref="Sequencer{T}"/>.
     /// </summary>
+    [Serializable]
     public sealed class SequencerException : Exception
     {
         /// <summary>
@@ -204,5 +206,12 @@
         /// <param name="message">The message for the <see cref="Exception"/></param>
         /// <param name="innerException">The inner exception</param>
         public SequencerException(string message, Exception innerException) : base(message, innerException) { }
+
+        /// <summary>
+        /// Creates an instance of the <see cref="SequencerException"/>.
+        /// </summary>
+        /// <param name="info">The serialization information</param>
+        /// <param name="context">The streaming context</param>
+        public SequencerException(SerializationInfo info, StreamingContext context) : base(info, context) { }
     }
 }
