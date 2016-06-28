@@ -7,7 +7,7 @@ ___
 
 ### Usage example:
 
-Start by getting the singleton instance which by convention expects a valid `log4net.config` file at the root of your applicaiton:
+Start by getting the singleton instance which by convention expects a valid `log4net.config` file at the root of your application:
 ```csharp
 ILogService logService = Log4NetService.Instance;
 ```
