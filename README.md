@@ -1,7 +1,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/k6ng7qdsd30c3nep?svg=true)](https://ci.appveyor.com/project/NimaAra/easy-logger)
 
-# Easy.Logger
-A high performance wrapper for Log4Net
+# Easy Logger
+A modern high performance wrapper for Log4Net
 ___
 
 
@@ -15,6 +15,8 @@ If you need to configure **log4net** using an alternative configuration file, yo
 ```csharp
 logService.Configure(new FileInfo(@"path-to-your-log4net-config-file"));
 ```
+
+\* Any change to the lo4net configuration file will be reflected immediately without the need to restart the application.
 
 Now that you have an instance of the `ILogService`, you can get a logger using the `GetLogger()` method in three different ways:
 
@@ -93,7 +95,6 @@ Using your favourite IoC container you can then do:
 var container = new Container();
 container.RegisterSingleton<ILogService>(logService);
 container.Register<IService, MyService>();
-logService = container.GetInstance<ILogService>();
 
 var service = container.GetInstance<IService>();
 service.Start();
