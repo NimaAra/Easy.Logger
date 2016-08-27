@@ -12,7 +12,7 @@
         <summary>A modern high performance wrapper around Log4Net.</summary>
         <releaseNotes>https://github.com/NimaAra/Easy.Logger/releases/tag/v1.6.0</releaseNotes>
         <copyright>Copyright 2016</copyright>
-        <tags>log4net logging</tags>        
+        <tags>log4net logging easy</tags>        
         <dependencies>
             <dependency id="log4net" version="2.0.5" />
         </dependencies>
