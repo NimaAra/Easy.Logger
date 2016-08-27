@@ -1,7 +1,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/k6ng7qdsd30c3nep?svg=true)](https://ci.appveyor.com/project/NimaAra/easy-logger)
 
 # Easy Logger
-A modern high performance wrapper for Log4Net
+A modern high performance wrapper for Log4Net.
 ___
 
 
