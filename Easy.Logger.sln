@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Easy.Logger", "Easy.Logger\Easy.Logger.csproj", "{4FF0E08A-3D8D-4474-985A-735ECD13DD92}"
 EndProject
@@ -10,6 +10,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{CEA54F9A-AFFF-4D07-8C5B-4E95458F97AD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Easy.Logger.Tests.Unit", "Easy.Logger.Tests.Unit\Easy.Logger.Tests.Unit.csproj", "{E1E35A02-408A-4BCB-97B8-C9467438BF8D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9468A7B1-1999-4075-B030-06103A3DFE12}"
+	ProjectSection(SolutionItems) = preProject
+		Easy.Logger\Easy.Logger.nuspec = Easy.Logger\Easy.Logger.nuspec
+		Version.cs = Version.cs
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

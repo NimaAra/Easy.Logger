@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Concurrent;
     using System.Runtime.Serialization;
+    using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -11,15 +12,16 @@
     /// <typeparam name="T">The type of the object to be produced/consumed</typeparam>
     public sealed class Sequencer<T>
     {
+        private readonly CancellationTokenSource _cts;
         private readonly BlockingCollection<T> _queue;
-        private Task _worker;
+        private readonly Task _worker;
+        private volatile bool _isShutdownRequested;
 
         /// <summary>
         /// Creates an instance of <see cref="Sequencer{T}"/>
         /// </summary>
         /// <param name="consumer">The action to be executed when consuming the item.</param>
-        public Sequencer(Action<T> consumer)
-            : this(-1, consumer) { }
+        public Sequencer(Action<T> consumer) : this(-1, consumer) {}
 
         /// <summary>
         /// Creates an instance of <see cref="Sequencer{T}"/>
@@ -29,18 +31,24 @@
         /// The bounded size of the queue.
         /// Any more items added will block until there is more space available.
         /// </param>
-        public Sequencer(Action<T> consumer, int boundedCapacity)
-            : this(boundedCapacity, consumer)
+        public Sequencer(Action<T> consumer, int boundedCapacity) : this(boundedCapacity, consumer)
         {
-            if (boundedCapacity <= 0) { throw new ArgumentException("Bounded capacity should be greater than zero."); }
+            if (boundedCapacity <= 0)
+            {
+                throw new ArgumentException("Bounded capacity should be greater than zero.");
+            }
         }
 
         private Sequencer(int boundedCapacity, Action<T> consumer)
         {
-            if (consumer == null) { throw new ArgumentNullException(nameof(consumer)); }
+            if (consumer == null)
+            {
+                throw new ArgumentNullException(nameof(consumer));
+            }
 
             _queue = boundedCapacity > 0 ? new BlockingCollection<T>(boundedCapacity) : new BlockingCollection<T>();
-            SetupConsumer(consumer, 1);
+            _cts = new CancellationTokenSource();
+            _worker = GetConsumer(consumer);
         }
 
         /// <summary>
@@ -51,7 +59,7 @@
         /// <summary>
         /// Returns the count of items that are pending consumption.
         /// </summary>
-        public uint PendingCount => (uint)_queue.Count;
+        public uint PendingCount => (uint) _queue.Count;
 
         /// <summary>
         /// Returns the pending items in the queue. Note, the items are valid as
@@ -62,7 +70,7 @@
         /// <summary>
         /// Gets whether <see cref="Sequencer{T}"/> has started to shutdown.
         /// </summary>
-        public bool ShutdownRequested => _queue.IsAddingCompleted;
+        public bool ShutdownRequested => _isShutdownRequested;
 
         /// <summary>
         /// Thrown when the <see cref="_worker"/> throws an exception.
@@ -74,14 +82,15 @@
         /// This method blocks if the queue is full and until there is more room.
         /// </summary>
         /// <param name="item">The item to be added.</param>
-        /// <exception cref="ObjectDisposedException">The <see cref="Sequencer{T}"/> has been disposed.</exception>
-        /// <exception cref="InvalidOperationException">
-        /// The underlying collection for <see cref="Sequencer{T}"/> has been marked as 
-        /// complete with regards to additions.-or-The underlying collection didn't accept the item.
-        /// </exception>
         public void Enqueue(T item)
         {
-            _queue.Add(item);
+            try
+            {
+                _queue.Add(item);
+            } catch (Exception e)
+            {
+                OnException?.Invoke(this, new SequencerExceptionEventArgs(new SequencerException("Exception occurred when adding item.", e)));
+            }
         }
 
         /// <summary>
@@ -93,14 +102,16 @@
         /// If the item is a duplicate, and the underlying collection does 
         /// not accept duplicate items, then an InvalidOperationException is thrown.
         /// </returns>
-        /// <exception cref="ObjectDisposedException">The <see cref="Sequencer{T}"/> has been disposed.</exception>
-        /// <exception cref="InvalidOperationException">
-        /// The underlying collection for <see cref="Sequencer{T}"/> has been marked as 
-        /// complete with regards to additions.-or-The underlying collection didn't accept the item.
-        /// </exception>
         public bool TryEnqueue(T item)
         {
-            return _queue.TryAdd(item);
+            try
+            {
+                return _queue.TryAdd(item);
+            } catch (Exception e)
+            {
+                OnException?.Invoke(this, new SequencerExceptionEventArgs(new SequencerException("Exception occurred when adding item.", e)));
+                return false;
+            }
         }
 
         /// <summary>
@@ -114,18 +125,16 @@
         /// <returns>
         /// <c>True</c> if the item could be added to the collection within the specified time span; otherwise, <c>False</c>.
         /// </returns>
-        /// <exception cref="ObjectDisposedException">The <see cref="Sequencer{T}"/> has been disposed.</exception>
-        /// <exception cref="InvalidOperationException">
-        /// The underlying collection for <see cref="Sequencer{T}"/> has been marked as 
-        /// complete with regards to additions.-or-The underlying collection didn't accept the item.
-        /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// <paramref name="timeout"/> is a negative number other than -1 milliseconds, 
-        /// which represents an infinite time-out -or- <paramref name="timeout"/> is greater than MaxValue.
-        /// </exception>
         public bool TryEnqueue(T item, TimeSpan timeout)
         {
-            return _queue.TryAdd(item, timeout);
+            try
+            {
+                return _queue.TryAdd(item, timeout);
+            } catch (Exception e)
+            {
+                OnException?.Invoke(this, new SequencerExceptionEventArgs(new SequencerException("Exception occurred when adding item.", e)));
+                return false;
+            }
         }
 
         /// <summary>
@@ -137,28 +146,34 @@
         /// </param>
         public void Shutdown(bool waitForPendingItems = true)
         {
+            _isShutdownRequested = true;
             _queue.CompleteAdding();
             if (waitForPendingItems) { _worker.Wait(); }
+            _cts.Cancel();
+            _cts.Dispose();
+            _queue.Dispose();
         }
 
-        private void SetupConsumer(Action<T> consumer, int workerCount)
+        private Task GetConsumer(Action<T> consumer)
         {
-            Action work = () =>
-            {
-                foreach (var item in _queue.GetConsumingEnumerable()) { consumer(item); }
-            };
+            var cToken = _cts.Token;
 
-            for (var i = 0; i < workerCount; i++)
+            return Task.Factory.StartNew(() =>
             {
-                var task = new Task(work, TaskCreationOptions.LongRunning);
-                task.HandleExceptions(e =>
+                foreach (var item in _queue.GetConsumingEnumerable(cToken))
                 {
-                    OnException.Raise(this, new SequencerExceptionEventArgs(new SequencerException("Exception occurred.", e)));
-                });
+                    cToken.ThrowIfCancellationRequested();
 
-                _worker = task;
-                _worker.Start();
-            }
+                    try
+                    {
+                        consumer(item);
+                    }
+                    catch (Exception e)
+                    {
+                        OnException?.Invoke(this, new SequencerExceptionEventArgs(new SequencerException("Exception occurred.", e)));
+                    }
+                }
+            }, cToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
     }
 

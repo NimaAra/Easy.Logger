@@ -2,7 +2,6 @@
 {
     using System;
     using System.Threading;
-    using System.Timers;
     using log4net.Appender;
     using log4net.Core;
     using log4net.Util;
@@ -34,11 +33,11 @@
         public AsyncBufferingForwardingAppender()
         {
             _sequencer = new Sequencer<Action>(action => action(), 1);
-            _sequencer.OnException += OnSequencerException;
+            _sequencer.OnException += (sender, args) => LogLog.Error(GetType(), "An exception occurred while processing LogEvents.", args.Exception);
 
             _idleTimeThreshold = TimeSpan.FromMilliseconds(500);
             _idleFlushTimer = new Timer(_idleTimeThreshold.TotalSeconds * 1000);
-            _idleFlushTimer.Elapsed += InvokeFlushIfIdle;
+            _idleFlushTimer.Elapsed += (sender, args) => _sequencer.TryEnqueue(InvokeFlushIfIdle);
             _idleFlushTimer.Start();
         }
 
@@ -59,13 +58,15 @@
         {
             if (!_sequencer.ShutdownRequested)
             {
-                _sequencer.Enqueue(() => base.SendBuffer(events));
+                _sequencer.Enqueue(() =>
+                {
+                    base.SendBuffer(events);
+                    _lastFlushTime = DateTime.UtcNow;
+                });
             } else
             {
                 base.SendBuffer(events);
             }
-            
-            _lastFlushTime = DateTime.UtcNow;
         }
 
         /// <summary>
@@ -73,11 +74,9 @@
         /// </summary>
         protected override void OnClose()
         {
-            _idleFlushTimer.Elapsed -= InvokeFlushIfIdle;
             _idleFlushTimer.Dispose();
 
             _sequencer.Shutdown();
-            _sequencer.OnException -= OnSequencerException;
 
             base.OnClose();
         }
@@ -85,7 +84,7 @@
         /// <summary>
         /// This only flushes if <see cref="BufferingAppenderSkeleton.Lossy"/> is <c>False</c>.
         /// </summary>
-        private void InvokeFlushIfIdle(object sender, ElapsedEventArgs elapsedEventArgs)
+        private void InvokeFlushIfIdle()
         {
             if (!IsIdle) { return; }
             Flush();
@@ -108,11 +107,6 @@
             Append(warning);
             Flush();
             Lossy = true;
-        }
-
-        private void OnSequencerException(object sender, SequencerExceptionEventArgs args)
-        {
-            LogLog.Error(GetType(), "An exception occurred while processing LogEvents.", args.Exception);
         }
     }
 }

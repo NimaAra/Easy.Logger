@@ -14,14 +14,14 @@
     [TestFixture]
     public sealed class CreatingNewLog4NetServiceTests
     {
-        private readonly string _sampleAppName = "Easy.Logger.Tests.SampleLoggerApp.exe";
-        private readonly string _logfileName = "--LOGFILE--.log";
+        private const string SampleAppName = "Easy.Logger.Tests.SampleLoggerApp.exe";
+        private const string LogfileName = "--LOGFILE--.log";
 
         [Test]
         public async Task When_creating_a_log4net_service_with_no_default_configuration()
         {
             var extractedApp = ExtractSampleApp();
-            var pathToSampleApp = Path.Combine(extractedApp.FullName, _sampleAppName);
+            var pathToSampleApp = Path.Combine(extractedApp.FullName, SampleAppName);
 
             var outputMessages = new List<string>();
             using (var process = ProcessHelper.GetProcess(pathToSampleApp, outputMessages))
@@ -29,20 +29,30 @@
                 process.WaitForExit(1000);
 
                 outputMessages.ShouldNotBeEmpty();
-                outputMessages.ShouldContain(s => s == "[Process Error] - Unhandled Exception: System.IO.FileNotFoundException: Could not find a valid log4net configuration file");
+                outputMessages.ShouldContain(
+                    s =>
+                        s ==
+                        "[Process Error] - Unhandled Exception: System.IO.FileNotFoundException: Could not find a valid log4net configuration file");
 
-                if (!process.HasExited) { process.Kill(); }
+                if (!process.HasExited)
+                {
+                    process.Kill();
+                }
             }
 
             await Task.Delay(TimeSpan.FromSeconds(2));
-            extractedApp.Delete(true);
+
+            try
+            {
+                extractedApp.Delete(true);
+            } catch { /* ignored */ }
         }
 
         [Test]
         public async Task When_creating_a_log4net_service_with_default_configuration()
         {
             var extractedApp = ExtractSampleApp();
-            var pathToSampleApp = Path.Combine(extractedApp.FullName, _sampleAppName);
+            var pathToSampleApp = Path.Combine(extractedApp.FullName, SampleAppName);
 
             var log4NetConfigFile = new FileInfo(Path.Combine(extractedApp.FullName, "log4net.config"));
             log4NetConfigFile.Exists.ShouldBeFalse();
@@ -52,7 +62,7 @@
             log4NetConfigFile.Refresh();
             log4NetConfigFile.Exists.ShouldBeTrue();
 
-            var logFile = new FileInfo(Path.Combine(extractedApp.FullName, _logfileName));
+            var logFile = new FileInfo(Path.Combine(extractedApp.FullName, LogfileName));
             logFile.Exists.ShouldBeFalse();
 
             var errorMessages = new List<string>();
@@ -71,7 +81,11 @@
             }
 
             await Task.Delay(TimeSpan.FromSeconds(2));
-            extractedApp.Delete(true);
+            try
+            {
+                extractedApp.Delete(true);
+            }
+            catch { /* ignored */ }
         }
 
         [Test]
@@ -79,7 +93,7 @@
         {
             var baseDirectory = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
 
-            var defaultLogFile = new FileInfo(Path.Combine(baseDirectory.FullName, _logfileName));
+            var defaultLogFile = new FileInfo(Path.Combine(baseDirectory.FullName, LogfileName));
             defaultLogFile.Delete();
 
             // Let's start by default config
@@ -103,7 +117,7 @@
             var newLogFile = new FileInfo(Path.Combine(baseDirectory.FullName, NewLogFileName));
             newLogFile.Delete();
 
-            var newConfigContent = GetLog4NetConfiguration().Replace(_logfileName, NewLogFileName);
+            var newConfigContent = GetLog4NetConfiguration().Replace(LogfileName, NewLogFileName);
             var newConfigFile = new FileInfo(Path.Combine(baseDirectory.FullName, "log4net.config"));
             File.WriteAllText(newConfigFile.FullName, newConfigContent, Encoding.UTF8);
 
@@ -120,7 +134,7 @@
             var newerLogFile = new FileInfo(Path.Combine(baseDirectory.FullName, NewerLogFileName));
             newerLogFile.Delete();
 
-            var updatedConfigContent = GetLog4NetConfiguration().Replace(_logfileName, NewerLogFileName);
+            var updatedConfigContent = GetLog4NetConfiguration().Replace(LogfileName, NewerLogFileName);
             File.WriteAllText(newConfigFile.FullName, updatedConfigContent, Encoding.UTF8);
 
             logService.Configure(newConfigFile);

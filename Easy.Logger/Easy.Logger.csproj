@@ -49,15 +49,16 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Version.cs">
+      <Link>Properties\Version.cs</Link>
+    </Compile>
     <Compile Include="AsyncBufferingForwardingAppender.cs" />
-    <Compile Include="Extensions.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="ILoggerExtensions.cs" />
     <Compile Include="ILogService.cs" />
     <Compile Include="Log4NetLogger.cs" />
     <Compile Include="Log4NetService.cs" />
     <Compile Include="LogLevel.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScopedLogger.cs" />
     <Compile Include="Sequencer.cs" />
   </ItemGroup>
