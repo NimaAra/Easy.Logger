@@ -17,8 +17,4 @@
             <dependency id="log4net" version="2.0.5" />
         </dependencies>
   </metadata>
-  <files>
-        <file src="bin\Release\Easy.Logger.dll" target="lib\net40\Easy.Logger.dll" />
-        <file src="bin\Release\Easy.Logger.XML" target="lib\net40\Easy.Logger.XML" />
-  </files>
 </package>
