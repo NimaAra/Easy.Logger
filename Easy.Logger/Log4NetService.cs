@@ -11,7 +11,7 @@
     public sealed class Log4NetService : ILogService
     {
         private static readonly Lazy<Log4NetService> Lazy = new Lazy<Log4NetService>(() => new Log4NetService(), true);
-
+        
         /// <summary>
         /// Returns a single instance of the <see cref="Log4NetService"/>
         /// </summary>
@@ -36,8 +36,16 @@
             }
 
             var defaultConfigFile = new FileInfo(Path.Combine(log4NetConfigDir, "log4net.config"));
-            ConfigureImpl(defaultConfigFile);
+            if (!defaultConfigFile.Exists) { return; }
+
+            XmlConfigurator.ConfigureAndWatch(defaultConfigFile);
+            Configuration = defaultConfigFile;
         }
+        
+        /// <summary>
+        /// Gets the configuration file used to configure the <see cref="Log4NetService"/>.
+        /// </summary>
+        public FileInfo Configuration { get; private set; }
 
         /// <summary>
         /// Provides an override to configures the <see cref="Log4NetService"/> using the <paramref name="configFile"/>.
@@ -51,17 +59,23 @@
         /// </remarks>
         public void Configure(FileInfo configFile)
         {
-            ConfigureImpl(configFile);
+            if (configFile == null) { throw new ArgumentException("Config file cannot be null", nameof(configFile)); }
+            if (!configFile.Exists) { throw new FileNotFoundException("Could not find a valid log4net configuration file", configFile.FullName); }
+
+            XmlConfigurator.ConfigureAndWatch(configFile);
+            Configuration = configFile;
         }
 
         /// <summary>
         /// Obtains an <see cref="ILogger"/> for the given <paramref name="loggerType"/>.
         /// </summary>
         /// <param name="loggerType">The <see cref="Type"/> for which an <see cref="ILogger"/> should be returned</param>
-        /// <returns>The <see cref="ILogger"/></returns>
+        /// <exception cref="InvalidOperationException">Thrown if <see cref="Log4NetService"/> is not configured with a valid configuration file.</exception>
+        /// <returns>The <see cref="ILogger"/>An instance of the logger.</returns>
         [DebuggerStepThrough]
         public ILogger GetLogger(Type loggerType)
         {
+            if (Configuration == null) { throw new InvalidOperationException($"{GetType().Name} needs to be configured with a valid configuration file."); }
             return new Log4NetLogger(log4net.LogManager.GetLogger(loggerType));
         }
 
@@ -69,10 +83,12 @@
         /// Obtains an <see cref="ILogger"/> for the given <paramref name="loggerName"/>.
         /// </summary>
         /// <param name="loggerName">The name for which an <see cref="ILogger"/> should be returned</param>
-        /// <returns>The <see cref="ILogger"/></returns>
+        /// <exception cref="InvalidOperationException">Thrown if <see cref="Log4NetService"/> is not configured with a valid configuration file.</exception>
+        /// <returns>The <see cref="ILogger"/>An instance of the logger.</returns>
         [DebuggerStepThrough]
         public ILogger GetLogger(string loggerName)
         {
+            if (Configuration == null) { throw new InvalidOperationException($"{GetType().Name} needs to be configured with a valid configuration file."); }
             return new Log4NetLogger(log4net.LogManager.GetLogger(loggerName));
         }
 
@@ -80,7 +96,8 @@
         /// Obtains an <see cref="ILogger"/> for the given <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">The type for which an <see cref="ILogger"/> should be returned</typeparam>
-        /// <returns>The <see cref="ILogger"/></returns>
+        /// <exception cref="InvalidOperationException">Thrown if <see cref="Log4NetService"/> is not configured with a valid configuration file.</exception>
+        /// <returns>The <see cref="ILogger"/>An instance of the logger.</returns>
         [DebuggerStepThrough]
         public ILogger GetLogger<T>()
         {
@@ -94,14 +111,6 @@
         public void Dispose()
         {
             log4net.LogManager.Shutdown();
-        }
-
-        private static void ConfigureImpl(FileInfo configFile)
-        {
-            if (configFile == null) { throw new ArgumentException("Config file cannot be null", nameof(configFile)); }
-            if (!configFile.Exists) { throw new FileNotFoundException("Could not find a valid log4net configuration file", configFile.FullName); }
-
-            XmlConfigurator.ConfigureAndWatch(configFile);
         }
     }
 }

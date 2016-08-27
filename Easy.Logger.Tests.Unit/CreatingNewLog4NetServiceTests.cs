@@ -18,37 +18,6 @@
         private const string LogfileName = "--LOGFILE--.log";
 
         [Test]
-        public async Task When_creating_a_log4net_service_with_no_default_configuration()
-        {
-            var extractedApp = ExtractSampleApp();
-            var pathToSampleApp = Path.Combine(extractedApp.FullName, SampleAppName);
-
-            var outputMessages = new List<string>();
-            using (var process = ProcessHelper.GetProcess(pathToSampleApp, outputMessages))
-            {
-                process.WaitForExit(1000);
-
-                outputMessages.ShouldNotBeEmpty();
-                outputMessages.ShouldContain(
-                    s =>
-                        s ==
-                        "[Process Error] - Unhandled Exception: System.IO.FileNotFoundException: Could not find a valid log4net configuration file");
-
-                if (!process.HasExited)
-                {
-                    process.Kill();
-                }
-            }
-
-            await Task.Delay(TimeSpan.FromSeconds(2));
-
-            try
-            {
-                extractedApp.Delete(true);
-            } catch { /* ignored */ }
-        }
-
-        [Test]
         public async Task When_creating_a_log4net_service_with_default_configuration()
         {
             var extractedApp = ExtractSampleApp();
@@ -173,7 +142,7 @@
 
             var extractDir = new DirectoryInfo(Path.Combine(tmpDir, randomDir));
 
-            Console.WriteLine("Extracting to: {0}", extractDir.FullName);
+            Console.WriteLine($"Extracting to: {extractDir.FullName}");
             ZipFile.ExtractToDirectory(pathToArchive, extractDir.FullName);
 
             return extractDir;

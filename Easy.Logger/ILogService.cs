@@ -10,6 +10,11 @@
     public interface ILogService : IDisposable
     {
         /// <summary>
+        /// Gets the configuration file used to configure the <see cref="ILogService"/>.
+        /// </summary>
+        FileInfo Configuration { get; }
+        
+        /// <summary>
         /// Configures the logging service by using the specified configuration file.
         /// </summary>
         /// <param name="configFile"></param>
