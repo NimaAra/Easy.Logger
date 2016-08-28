@@ -1,7 +1,7 @@
 ﻿namespace Easy.Logger.Tests.Unit
 {
     using System.Collections.Generic;
-    using System.Threading;
+    using System.Threading.Tasks;
     using log4net.Appender;
     using log4net.Core;
     using Moq;
@@ -12,7 +12,7 @@
     public sealed class AsyncBufferingForwardingAppenderTests
     {
         [Test]
-        public void When_testing_a_non_lossy_forwarder()
+        public async Task When_testing_a_non_lossy_forwarder()
         {
             var forwarder = new AsyncBufferingForwardingAppender();
             forwarder.BufferSize.ShouldBe(512);
@@ -37,7 +37,7 @@
 
             loggedEvents.Count.ShouldBe(0);
 
-            Thread.Sleep(1000);
+            await Task.Delay(1000);
 
             loggedEvents.Count.ShouldBe(1);
 
@@ -47,7 +47,7 @@
                 new LoggingEvent(new LoggingEventData())
             });
 
-            Thread.Sleep(1000);
+            await Task.Delay(1000);
 
             loggedEvents.Count.ShouldBe(3);
 
@@ -58,7 +58,7 @@
         }
 
         [Test]
-        public void When_testing_a_lossy_forwarder()
+        public async Task When_testing_a_lossy_forwarder()
         {
             var forwarder = new AsyncBufferingForwardingAppender
             {
@@ -84,7 +84,7 @@
 
             forwarder.ActivateOptions();
 
-            Thread.Sleep(1000);
+            await Task.Delay(1000);
 
             loggedEvents.Count.ShouldBe(1);
             loggedEvents[0].Level.ShouldBe(Level.Warn);
@@ -106,7 +106,7 @@
 
             forwarder.DoAppend(event1);
 
-            Thread.Sleep(1000);
+            await Task.Delay(1000);
 
             loggedEvents.Count.ShouldBe(1);
             loggedEvents[0].Level.ShouldBe(Level.Warn);
@@ -114,7 +114,7 @@
             forwarder.DoAppend(new[] { event2, event3, event4 });
             forwarder.Flush(true);
 
-            Thread.Sleep(1000);
+            await Task.Delay(1000);
 
             loggedEvents.Count.ShouldBe(2);
             loggedEvents[0].Level.ShouldBe(Level.Warn);
