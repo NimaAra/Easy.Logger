@@ -58,6 +58,7 @@
     <Compile Include="ILogService.cs" />
     <Compile Include="Log4NetLogger.cs" />
     <Compile Include="Log4NetService.cs" />
+    <Compile Include="LoggerExtensions.cs" />
     <Compile Include="LogLevel.cs" />
     <Compile Include="ScopedLogger.cs" />
     <Compile Include="Sequencer.cs" />
