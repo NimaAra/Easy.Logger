@@ -32,7 +32,7 @@
         /// </summary>
         public AsyncBufferingForwardingAppender()
         {
-            _sequencer = new Sequencer<Action>(action => action(), 1);
+            _sequencer = new Sequencer<Action>(action => action());
             _sequencer.OnException += (sender, args) => LogLog.Error(GetType(), "An exception occurred while processing LogEvents.", args.Exception);
 
             _idleTimeThreshold = TimeSpan.FromMilliseconds(500);
@@ -75,9 +75,7 @@
         protected override void OnClose()
         {
             _idleFlushTimer.Dispose();
-
             _sequencer.Shutdown();
-
             base.OnClose();
         }
 
