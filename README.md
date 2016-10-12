@@ -2,6 +2,8 @@
 
 # Easy Logger
 A modern high performance wrapper for Log4Net.
+
+Details and benchmarks [HERE](http://www.nimaara.com/2016/01/01/high-performance-logging-log4net/).
 ___
 
 
@@ -112,5 +114,4 @@ The library does not need to be disposed explicitly as the framework takes care 
 logService.Dispose();
 ```
 
-* More details and benchmarks [HERE](http://www.nimaara.com/2016/01/01/high-performance-logging-log4net/)
 * NuGet at: https://www.nuget.org/packages/Easy.Logger/
