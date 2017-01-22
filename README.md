@@ -113,7 +113,7 @@ Running the above results in the following log entry:
 ```
 
 ### Disposal
-The library does not need to be disposed explicitly as the framework takes care of the flushing of any pending log entries. In any case you can explicitly dipose the `Log4NetService` by:
+The library does not need to be disposed explicitly as the framework takes care of the flushing of any pending log entries. In any case you can explicitly dispose the `Log4NetService` by:
 
 ```csharp
 logService.Dispose();
