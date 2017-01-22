@@ -3,6 +3,11 @@
 # Easy Logger
 A modern, high performance, cross platform wrapper around Log4Net.
 
+Supports _.Net Core_ (_.Net 4_ & _netstandard1.3_) running on:
+* .Net Core
+* .Net Framework 4 and above
+* Mono & Xamarin
+
 Details and benchmarks [HERE](http://www.nimaara.com/2016/01/01/high-performance-logging-log4net/).
 ___
 
