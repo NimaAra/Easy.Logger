@@ -3,34 +3,47 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Easy.Logger", "Easy.Logger\Easy.Logger.csproj", "{4FF0E08A-3D8D-4474-985A-735ECD13DD92}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6CE5ED20-A76B-4E38-B7BE-0D91183F1D4B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Easy.Logger.Benchmarker", "Easy.Logger.Benchmarker\Easy.Logger.Benchmarker.csproj", "{E3320558-EE91-4C8F-AB4D-11390CD34617}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{CEA54F9A-AFFF-4D07-8C5B-4E95458F97AD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Easy.Logger.Tests.Unit", "Easy.Logger.Tests.Unit\Easy.Logger.Tests.Unit.csproj", "{E1E35A02-408A-4BCB-97B8-C9467438BF8D}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9468A7B1-1999-4075-B030-06103A3DFE12}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{72B2B334-AE2A-4C4E-83A1-86CD31BDAA7C}"
 	ProjectSection(SolutionItems) = preProject
-		Easy.Logger\Easy.Logger.nuspec = Easy.Logger\Easy.Logger.nuspec
-		Version.cs = Version.cs
+		global.json = global.json
 	EndProjectSection
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Easy.Logger", "src\Easy.Logger\Easy.Logger.xproj", "{A58280AA-0FAF-4E49-AA05-54CEDD500006}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Easy.Logger.Benchmarker.Core", "src\Easy.Logger.Benchmarker.Core\Easy.Logger.Benchmarker.Core.xproj", "{6527A88A-B9B0-4663-89BE-001A5244C1A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Easy.Logger.Benchmarker", "src\Easy.Logger.Benchmarker\Easy.Logger.Benchmarker.csproj", "{887C6BBB-8A11-44CC-8FE6-38D47B5011FD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Easy.Logger.Tests.Unit", "test\Easy.Logger.Tests.Unit\Easy.Logger.Tests.Unit.csproj", "{E1E35A02-408A-4BCB-97B8-C9467438BF8D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A58280AA-0FAF-4E49-AA05-54CEDD500006} = {A58280AA-0FAF-4E49-AA05-54CEDD500006}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{B37F23E7-6F36-48B2-A458-87C16F1BDC6D}"
+EndProject
 Global
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4FF0E08A-3D8D-4474-985A-735ECD13DD92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4FF0E08A-3D8D-4474-985A-735ECD13DD92}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4FF0E08A-3D8D-4474-985A-735ECD13DD92}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4FF0E08A-3D8D-4474-985A-735ECD13DD92}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E3320558-EE91-4C8F-AB4D-11390CD34617}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E3320558-EE91-4C8F-AB4D-11390CD34617}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E3320558-EE91-4C8F-AB4D-11390CD34617}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E3320558-EE91-4C8F-AB4D-11390CD34617}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A58280AA-0FAF-4E49-AA05-54CEDD500006}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A58280AA-0FAF-4E49-AA05-54CEDD500006}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A58280AA-0FAF-4E49-AA05-54CEDD500006}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A58280AA-0FAF-4E49-AA05-54CEDD500006}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6527A88A-B9B0-4663-89BE-001A5244C1A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6527A88A-B9B0-4663-89BE-001A5244C1A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6527A88A-B9B0-4663-89BE-001A5244C1A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6527A88A-B9B0-4663-89BE-001A5244C1A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{887C6BBB-8A11-44CC-8FE6-38D47B5011FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{887C6BBB-8A11-44CC-8FE6-38D47B5011FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{887C6BBB-8A11-44CC-8FE6-38D47B5011FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{887C6BBB-8A11-44CC-8FE6-38D47B5011FD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E1E35A02-408A-4BCB-97B8-C9467438BF8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E1E35A02-408A-4BCB-97B8-C9467438BF8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E1E35A02-408A-4BCB-97B8-C9467438BF8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -40,6 +53,9 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{E1E35A02-408A-4BCB-97B8-C9467438BF8D} = {CEA54F9A-AFFF-4D07-8C5B-4E95458F97AD}
+		{A58280AA-0FAF-4E49-AA05-54CEDD500006} = {6CE5ED20-A76B-4E38-B7BE-0D91183F1D4B}
+		{6527A88A-B9B0-4663-89BE-001A5244C1A4} = {6CE5ED20-A76B-4E38-B7BE-0D91183F1D4B}
+		{887C6BBB-8A11-44CC-8FE6-38D47B5011FD} = {6CE5ED20-A76B-4E38-B7BE-0D91183F1D4B}
+		{E1E35A02-408A-4BCB-97B8-C9467438BF8D} = {B37F23E7-6F36-48B2-A458-87C16F1BDC6D}
 	EndGlobalSection
 EndGlobal
