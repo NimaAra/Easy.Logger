@@ -9,6 +9,11 @@
     public interface ILogger
     {
         /// <summary>
+        /// Gets the logger name.
+        /// </summary>
+        string Name { get; }
+        
+        /// <summary>
         /// Logs a <see cref="LogLevel.Trace"/> level message object.
         /// </summary>
         /// <param name="message">The message object to be logged.</param>

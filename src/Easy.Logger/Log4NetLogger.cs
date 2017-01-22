@@ -20,7 +20,13 @@
         internal Log4NetLogger(ILog logger)
         {
             _logger = logger;
+            Name = _logger.Logger.Name;
         }
+
+        /// <summary>
+        /// Gets the logger name.
+        /// </summary>
+        public string Name { get; }
 
         /// <summary>
         /// Logs a message object with the <see cref="LogLevel.Trace"/> level.
@@ -848,6 +854,25 @@
         public void FatalFormat(IFormatProvider provider, string format, params object[] args)
         {
             _logger.FatalFormat(provider, format, args);
+        }
+
+        /// <summary>
+        /// Checks if this logger is enabled for the given <paramref name="level"/> passed as parameter. 
+        /// </summary>
+        [DebuggerStepThrough]
+        public bool IsEnabledFor(Level level)
+        {
+            return _logger.Logger.IsEnabledFor(level);
+        }
+
+        /// <summary>
+        /// Generates a logging event for the specified <paramref name="level"/> using 
+        /// the <paramref name="message"/> and <paramref name="exception"/>. 
+        /// </summary>
+        [DebuggerStepThrough]
+        public void Log(Level level, object message, Exception exception = null)
+        {
+            _logger.Logger.Log(ThisDeclaringType, level, message, exception);
         }
 
         /// <summary>

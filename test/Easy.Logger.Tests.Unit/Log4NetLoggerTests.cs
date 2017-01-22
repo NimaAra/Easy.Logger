@@ -20,10 +20,13 @@
         public void SetUp()
         {
             _mockedInnerLogger = new Mock<ILogger>();
+            _mockedInnerLogger.Setup(l => l.Name).Returns("Inner Logger");
+
             _mockedLogger = new Mock<ILog>();
             _mockedLogger.Setup(l => l.Logger).Returns(_mockedInnerLogger.Object);
 
             _logger = new Log4NetLogger(_mockedLogger.Object);
+            _logger.Name.ShouldBe("Inner Logger");
         }
 
         [Test]
