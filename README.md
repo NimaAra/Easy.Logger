@@ -20,7 +20,7 @@ ILogService logService = Log4NetService.Instance;
 ```
 If you need to configure **log4net** using an alternative configuration file, you can do so by:
 ```csharp
-logService.Configure(new FileInfo(@"path-to-your-log4net-config-file"));
+logService.Configure(new FileInfo("path-to-your-log4net-config-file"));
 ```
 
 \* Any change to the log4net configuration file will be reflected immediately without the need to restart the application.
