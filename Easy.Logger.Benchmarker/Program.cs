@@ -2,6 +2,7 @@
 {
     using System;
     using System.Diagnostics;
+    using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -27,6 +28,9 @@
 
         public Program(TimeSpan duration)
         {
+            var configFile = new FileInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "some-log4net.config"));
+            Log4NetService.Instance.Configure(configFile);
+            
             _duration = duration;
             _logger = Log4NetService.Instance.GetLogger<Program>();
         }

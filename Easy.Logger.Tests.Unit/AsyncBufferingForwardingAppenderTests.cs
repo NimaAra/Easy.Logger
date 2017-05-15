@@ -73,7 +73,7 @@
             forwarder.Appenders.Count.ShouldBe(0);
             forwarder.Threshold.ShouldBeNull();
             forwarder.LossyEvaluator.ShouldBeOfType<LevelEvaluator>();
-            
+
             var loggedEvents = new List<LoggingEvent>();
             var mockedAppender = new Mock<IAppender>();
             mockedAppender
@@ -92,7 +92,7 @@
             loggedEvents[0].RenderedMessage
                 .ShouldContain("This is a 'lossy' appender therefore log messages may be dropped.");
 
-            var event1 = new LoggingEvent(new LoggingEventData {Level = Level.Info});
+            var event1 = new LoggingEvent(new LoggingEventData { Level = Level.Info });
             var event2 = new LoggingEvent(new LoggingEventData { Level = Level.Debug });
             var event3 = new LoggingEvent(new LoggingEventData { Level = Level.Error });
             var event4 = new LoggingEvent(new LoggingEventData { Level = Level.Warn });
@@ -110,7 +110,7 @@
 
             loggedEvents.Count.ShouldBe(1);
             loggedEvents[0].Level.ShouldBe(Level.Warn);
-            
+
             forwarder.DoAppend(new[] { event2, event3, event4 });
             forwarder.Flush(true);
 

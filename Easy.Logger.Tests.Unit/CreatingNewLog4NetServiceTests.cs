@@ -9,7 +9,6 @@
     using Helpers;
     using NUnit.Framework;
     using Shouldly;
-    using Log4NetService = Log4NetService;
 
     [TestFixture]
     public sealed class CreatingNewLog4NetServiceTests

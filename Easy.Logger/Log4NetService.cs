@@ -41,10 +41,11 @@
             log4NetConfigDir = AppDomain.CurrentDomain.BaseDirectory;
             assembly = GetType().Assembly;
 #endif
+            _repository = LogManager.GetRepository(assembly);
+            
             var defaultConfigFile = new FileInfo(Path.Combine(log4NetConfigDir, "log4net.config"));
             if (!defaultConfigFile.Exists) { return; }
-
-            _repository = LogManager.GetRepository(assembly);
+            
             XmlConfigurator.ConfigureAndWatch(_repository, defaultConfigFile);
             Configuration = defaultConfigFile;
         }
