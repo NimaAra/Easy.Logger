@@ -5,13 +5,9 @@
     <TargetFramework>netcoreapp1.1</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="App.config" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="App.config" />
-  </ItemGroup>
+  <PropertyGroup>
+    <ServerGarbageCollection>true</ServerGarbageCollection>
+  </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Easy.Logger\Easy.Logger.csproj" />

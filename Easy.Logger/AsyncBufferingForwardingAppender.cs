@@ -12,9 +12,12 @@
     /// </summary>
     public sealed class AsyncBufferingForwardingAppender : BufferingForwardingAppender
     {
+        // ReSharper disable once InconsistentNaming
+        private const int DEFAULT_IDLE_TIME = 500;
+        
         private readonly Sequencer<Action> _sequencer;
-        private readonly TimeSpan _idleTimeThreshold;
-        private readonly Timer _idleFlushTimer;
+        private TimeSpan _idleTimeThreshold;
+        private Timer _idleFlushTimer;
         private DateTime _lastFlushTime;
 
         private bool IsIdle
@@ -27,15 +30,29 @@
         }
 
         /// <summary>
+        /// Gets or sets the idle-time in milliseconds at which any pending logging events are flushed.
+        /// <value>The idle-time in milliseconds.</value>
+        /// <remarks>
+        /// <para>
+        /// The value should be a positive integer representing the maximum idle-time of logging events 
+        /// to be collected in the <see cref="AsyncBufferingForwardingAppender"/>. When this value is 
+        /// reached, buffered events are then flushed. By default the idle-time is <c>500</c> milliseconds.
+        /// </para>
+        /// <para>
+        /// If the <see cref="IdleTime"/> is set to a value less than or equal to <c>0</c>
+        /// then use the default value is used.
+        /// </para>
+        /// </remarks>
+        /// </summary>
+        public int IdleTime { get; set; } = DEFAULT_IDLE_TIME;
+
+        /// <summary>
         /// Creates an instance of the <see cref="AsyncBufferingForwardingAppender"/>
         /// </summary>
         public AsyncBufferingForwardingAppender()
         {
             _sequencer = new Sequencer<Action>(action => action());
             _sequencer.OnException += (sender, args) => LogLog.Error(GetType(), "An exception occurred while processing LogEvents.", args.Exception);
-
-            _idleTimeThreshold = TimeSpan.FromMilliseconds(500);
-            _idleFlushTimer = new Timer(state => _sequencer.TryEnqueue(InvokeFlushIfIdle), null, _idleTimeThreshold, _idleTimeThreshold);
         }
 
         /// <summary>
@@ -44,6 +61,12 @@
         public override void ActivateOptions()
         {
             base.ActivateOptions();
+
+            if (IdleTime <= 0) { IdleTime = DEFAULT_IDLE_TIME; }
+            
+            _idleTimeThreshold = TimeSpan.FromMilliseconds(IdleTime);
+            _idleFlushTimer = new Timer(state => _sequencer.TryEnqueue(InvokeFlushIfIdle), null, _idleTimeThreshold, _idleTimeThreshold);
+
             LogWarningIfLossy();
         }
 

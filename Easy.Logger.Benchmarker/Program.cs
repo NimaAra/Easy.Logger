@@ -28,7 +28,7 @@
 
         public Program(TimeSpan duration)
         {
-            var configFile = new FileInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "some-log4net.config"));
+            var configFile = new FileInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "the-log4net.config"));
             Log4NetService.Instance.Configure(configFile);
             
             _duration = duration;
