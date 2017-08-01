@@ -61,11 +61,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Easy.Logger.Interfaces" Version="1.0.0" />
     <PackageReference Include="log4net" Version="2.0.8" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Easy.Logger.Interfaces\Easy.Logger.Interfaces.csproj" />
   </ItemGroup>
 
 </Project>
