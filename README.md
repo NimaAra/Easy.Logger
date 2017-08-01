@@ -29,7 +29,7 @@ Now that you have an instance of the `ILogService`, you can get a logger using t
 
 ##### Generics:
 ```csharp
-ILogger logger = logService.GetLogger<Program>();
+IEasyLogger logger = logService.GetLogger<Program>();
 logger.Debug("I am in Program!");
 ```
 ##### Type:
@@ -55,7 +55,7 @@ The above logging results in the the following log entries (based on the [sample
 Sometimes you need to log the entry and exit points of an operation so instead of having to log that manually we can use the scoping feature of the library:
 
 ```csharp
-using (logger.GetScopedLogger("SomeScope", LogLevel.Debug))
+using (logger.GetScopedLogger("SomeScope", EasyLogLevel.Debug))
 {
     logger.Info("Foo is awesome!");
     logger.Debug("Bar is even more awesome!");
@@ -77,7 +77,7 @@ The library has been designed with DI in mind so as an example, given the servic
 ```csharp
 public class MyService : IService
 {
-    private readonly ILogger _logger;
+    private readonly IEasyLogger _logger;
 
     public MyService(ILogService logService)
     {
