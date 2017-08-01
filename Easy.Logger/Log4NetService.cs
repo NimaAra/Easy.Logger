@@ -4,6 +4,7 @@
     using System.Diagnostics;
     using System.IO;
     using System.Reflection;
+    using Easy.Logger.Interfaces;
     using log4net;
     using log4net.Config;
     using log4net.Repository;
@@ -75,39 +76,39 @@
         }
 
         /// <summary>
-        /// Obtains an <see cref="ILogger"/> for the given <paramref name="loggerType"/>.
+        /// Obtains an <see cref="IEasyLogger"/> for the given <paramref name="loggerType"/>.
         /// </summary>
-        /// <param name="loggerType">The <see cref="Type"/> for which an <see cref="ILogger"/> should be returned</param>
+        /// <param name="loggerType">The <see cref="Type"/> for which an <see cref="IEasyLogger"/> should be returned</param>
         /// <exception cref="InvalidOperationException">Thrown if <see cref="Log4NetService"/> is not configured with a valid configuration file.</exception>
-        /// <returns>The <see cref="ILogger"/>An instance of the logger.</returns>
+        /// <returns>The <see cref="IEasyLogger"/>An instance of the logger.</returns>
         [DebuggerStepThrough]
-        public ILogger GetLogger(Type loggerType)
+        public IEasyLogger GetLogger(Type loggerType)
         {
             if (Configuration == null) { throw new InvalidOperationException($"{GetType().Name} needs to be configured with a valid configuration file."); }
             return new Log4NetLogger(LogManager.GetLogger(loggerType));
         }
 
         /// <summary>
-        /// Obtains an <see cref="ILogger"/> for the given <paramref name="loggerName"/>.
+        /// Obtains an <see cref="IEasyLogger"/> for the given <paramref name="loggerName"/>.
         /// </summary>
-        /// <param name="loggerName">The name for which an <see cref="ILogger"/> should be returned</param>
+        /// <param name="loggerName">The name for which an <see cref="IEasyLogger"/> should be returned</param>
         /// <exception cref="InvalidOperationException">Thrown if <see cref="Log4NetService"/> is not configured with a valid configuration file.</exception>
-        /// <returns>The <see cref="ILogger"/>An instance of the logger.</returns>
+        /// <returns>The <see cref="IEasyLogger"/>An instance of the logger.</returns>
         [DebuggerStepThrough]
-        public ILogger GetLogger(string loggerName)
+        public IEasyLogger GetLogger(string loggerName)
         {
             if (Configuration == null) { throw new InvalidOperationException($"{GetType().Name} needs to be configured with a valid configuration file."); }
             return new Log4NetLogger(LogManager.GetLogger(_repository.Name, loggerName));
         }
 
         /// <summary>
-        /// Obtains an <see cref="ILogger"/> for the given <typeparamref name="T"/>.
+        /// Obtains an <see cref="IEasyLogger"/> for the given <typeparamref name="T"/>.
         /// </summary>
-        /// <typeparam name="T">The type for which an <see cref="ILogger"/> should be returned</typeparam>
+        /// <typeparam name="T">The type for which an <see cref="IEasyLogger"/> should be returned</typeparam>
         /// <exception cref="InvalidOperationException">Thrown if <see cref="Log4NetService"/> is not configured with a valid configuration file.</exception>
-        /// <returns>The <see cref="ILogger"/>An instance of the logger.</returns>
+        /// <returns>The <see cref="IEasyLogger"/>An instance of the logger.</returns>
         [DebuggerStepThrough]
-        public ILogger GetLogger<T>()
+        public IEasyLogger GetLogger<T>()
         {
             return GetLogger(typeof(T));
         }

@@ -1,9 +1,9 @@
-﻿namespace Easy.Logger
+﻿namespace Easy.Logger.Interfaces
 {
     /// <summary>
     /// Determines the level as which a log entry should be logged.
     /// </summary>
-    public enum LogLevel
+    public enum EasyLogLevel
     {
         /// <summary>
         /// The trace level.

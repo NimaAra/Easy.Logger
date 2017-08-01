@@ -1,17 +1,18 @@
 ﻿namespace Easy.Logger
 {
     using System;
-
+    using Easy.Logger.Interfaces;
+    
     /// <summary>
     /// Provides scoped logging.
     /// </summary>
     public struct ScopedLogger : IDisposable
     {
-        private readonly ILogger _logger;
+        private readonly IEasyLogger _logger;
         private readonly string _scopeName;
-        private readonly LogLevel _level;
+        private readonly EasyLogLevel _level;
 
-        internal ScopedLogger(ILogger logger, string scopeName, LogLevel level)
+        internal ScopedLogger(IEasyLogger logger, string scopeName, EasyLogLevel level)
         {
             _scopeName = scopeName;
             _logger = logger;
@@ -29,19 +30,19 @@
         {
             switch (_level)
             {
-                case LogLevel.Debug:
+                case EasyLogLevel.Debug:
                     _logger.Debug(message);
                     break;
-                case LogLevel.Info:
+                case EasyLogLevel.Info:
                     _logger.Info(message);
                     break;
-                case LogLevel.Warn:
+                case EasyLogLevel.Warn:
                     _logger.Warn(message);
                     break;
-                case LogLevel.Error:
+                case EasyLogLevel.Error:
                     _logger.Error(message);
                     break;
-                case LogLevel.Fatal:
+                case EasyLogLevel.Fatal:
                     _logger.Fatal(message);
                     break;
             }

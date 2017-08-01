@@ -5,11 +5,12 @@
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
+    using Easy.Logger.Interfaces;
 
     internal class Program
     {
         private readonly TimeSpan _duration;
-        private readonly ILogger _logger;
+        private readonly IEasyLogger _logger;
 
         private static void Main(string[] args)
         {

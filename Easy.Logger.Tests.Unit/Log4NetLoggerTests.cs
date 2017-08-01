@@ -2,13 +2,14 @@
 {
     using System;
     using System.Globalization;
+    using Easy.Logger.Interfaces;
     using log4net;
     using log4net.Core;
     using log4net.Util;
     using Moq;
     using NUnit.Framework;
     using Shouldly;
-
+    
     [TestFixture]
     public sealed class Log4NetLoggerTests
     {
@@ -244,10 +245,10 @@
         public void When_logging_using_scopped_logger()
         {
             // First try with Debug
-            using (_logger.GetScopedLogger("Foo", LogLevel.Debug))
+            using (_logger.GetScopedLogger("Foo", EasyLogLevel.Debug))
             {
                 _mockedLogger.Verify(l => l.Debug("[-BEGIN---> Foo]"), Times.Once);
-
+                
                 _logger.WarnFormat("bar {0}", "is closed");
 
                 _mockedLogger.Verify(l => l.WarnFormat("bar {0}", "is closed"), Times.Once);
@@ -256,7 +257,7 @@
             _mockedLogger.Verify(l => l.Debug("[--END----> Foo]"), Times.Once);
 
             // Now try Fatal
-            using (_logger.GetScopedLogger("DummyScope", LogLevel.Fatal))
+            using (_logger.GetScopedLogger("DummyScope", EasyLogLevel.Fatal))
             {
                 _mockedLogger.Verify(l => l.Fatal("[-BEGIN---> DummyScope]"), Times.Once);
 

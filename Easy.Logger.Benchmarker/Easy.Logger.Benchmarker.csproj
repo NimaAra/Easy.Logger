@@ -43,9 +43,14 @@
     <None Include="App.config" />
     <None Include="the-log4net.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Easy.Logger.Interfaces\Easy.Logger.Interfaces.csproj">
+      <Project>{80248AFD-52ED-47A0-B077-97AE8DC067CF}</Project>
+      <Name>Easy.Logger.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Easy.Logger\Easy.Logger.csproj">
       <Project>{f1cfacd6-414e-4921-90fd-0949764e1756}</Project>
       <Name>Easy.Logger</Name>

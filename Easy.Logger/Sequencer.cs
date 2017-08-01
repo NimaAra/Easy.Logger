@@ -9,7 +9,7 @@
     /// A single worker implementation of the <c>Producer-Consumer</c> pattern.
     /// </summary>
     /// <typeparam name="T">The type of the object to be produced/consumed</typeparam>
-    public sealed class Sequencer<T>
+    internal sealed class Sequencer<T>
     {
         private readonly CancellationTokenSource _cts;
         private readonly BlockingCollection<T> _queue;

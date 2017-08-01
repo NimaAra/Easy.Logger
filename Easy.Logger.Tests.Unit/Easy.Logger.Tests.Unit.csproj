@@ -58,6 +58,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Easy.Logger.Interfaces\Easy.Logger.Interfaces.csproj">
+      <Project>{80248afd-52ed-47a0-b077-97ae8dc067cf}</Project>
+      <Name>Easy.Logger.Interfaces</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Easy.Logger\Easy.Logger.csproj">
       <Project>{f1cfacd6-414e-4921-90fd-0949764e1756}</Project>
       <Name>Easy.Logger</Name>

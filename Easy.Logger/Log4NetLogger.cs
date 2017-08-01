@@ -3,6 +3,7 @@
     using System;
     using System.Diagnostics;
     using System.Globalization;
+    using Easy.Logger.Interfaces;
     using log4net;
     using log4net.Core;
     using log4net.Util;
@@ -10,7 +11,7 @@
     /// <summary>
     /// A <c>log4net</c> implementation of the <see cref="ILogger"/> interface
     /// </summary>
-    internal sealed class Log4NetLogger : ILogger
+    internal sealed class Log4NetLogger : Interfaces.IEasyLogger
     {
 		private static readonly Type ThisDeclaringType = typeof(Log4NetLogger);
         private static readonly Level TraceLevel = Level.Trace;
@@ -29,13 +30,13 @@
         public string Name { get; }
 
         /// <summary>
-        /// Logs a message object with the <see cref="LogLevel.Trace"/> level.
+        /// Logs a message object with the <see cref="System.Diagnostics.Trace"/> level.
         /// </summary>
         /// <param name="message">The message object to be logged.</param>
         /// <remarks>
         /// <para>
         /// This method first checks if this logger is <c>Debug</c> enabled by comparing the level of 
-        /// this logger with the <see cref="LogLevel.Trace"/> level. If this logger is <c>Debug</c> 
+        /// this logger with the <see cref="System.Diagnostics.Trace"/> level. If this logger is <c>Debug</c> 
         /// enabled, then it converts the message object (passed as parameter) to a string by invoking the appropriate
         /// <see cref="T:log4net.ObjectRenderer.IObjectRenderer"/>. It then proceeds to call all the registered appenders 
         /// in this logger  and also higher in the hierarchy depending on the value of the additivity flag.
@@ -53,7 +54,7 @@
         }
 
         /// <summary>
-        /// Logs a message object with the <see cref="LogLevel.Trace"/> level including 
+        /// Logs a message object with the <see cref="System.Diagnostics.Trace"/> level including 
         /// the stack trace of the <see cref="T:System.Exception"/> passed as a parameter.
         /// </summary>
         /// <param name="message">The message object to be logged.</param>
@@ -65,7 +66,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Trace"/> level.
+        /// Logs a formatted message string with the <see cref="System.Diagnostics.Trace"/> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg">The object to format</param>
@@ -87,7 +88,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Trace"/> level.
+        /// Logs a formatted message string with the <see cref="System.Diagnostics.Trace"/> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg1">The first object to format</param>
@@ -105,7 +106,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Trace"/> level.
+        /// Logs a formatted message string with the <see cref="System.Diagnostics.Trace"/> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg1">The first object to format</param>
@@ -124,7 +125,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Trace"/> level.
+        /// Logs a formatted message string with the <see cref="System.Diagnostics.Trace"/> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="args">An Object array containing zero or more objects to format</param>
@@ -145,7 +146,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Trace"/> level.
+        /// Logs a formatted message string with the <see cref="System.Diagnostics.Trace"/> level.
         /// </summary>
         /// <param name="provider">An <see cref= "T:System.IFormatProvider" /> that supplies culture-specific formatting information</param>
         /// <param name="format">A String containing zero or more format items</param>
@@ -167,13 +168,13 @@
         }
 
         /// <summary>
-        /// Logs a message object with the <see cref="LogLevel.Debug"/> level.
+        /// Logs a message object with the <see cref="System.Diagnostics.Debug"/> level.
         /// </summary>
         /// <param name="message">The message object to be logged.</param>
         /// <remarks>
         /// <para>
         /// This method first checks if this logger is <c>Debug</c> enabled by comparing the level of 
-        /// this logger with the <see cref="LogLevel.Debug"/> level. If this logger is <c>Debug</c> 
+        /// this logger with the <see cref="System.Diagnostics.Debug"/> level. If this logger is <c>Debug</c> 
         /// enabled, then it converts the message object (passed as parameter) to a string by invoking the appropriate
         /// <see cref="T:log4net.ObjectRenderer.IObjectRenderer"/>. It then proceeds to call all the registered appenders 
         /// in this logger  and also higher in the hierarchy depending on the value of the additivity flag.
@@ -191,7 +192,7 @@
         }
 
         /// <summary>
-        /// Logs a message object with the <see cref="LogLevel.Debug"/> level including 
+        /// Logs a message object with the <see cref="System.Diagnostics.Debug"/> level including 
         /// the stack trace of the <see cref="T:System.Exception"/> passed as a parameter.
         /// </summary>
         /// <param name="message">The message object to be logged.</param>
@@ -203,7 +204,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Debug"/> level.
+        /// Logs a formatted message string with the <see cref="System.Diagnostics.Debug"/> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg">The object to format</param>
@@ -225,7 +226,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Debug"/> level.
+        /// Logs a formatted message string with the <see cref="System.Diagnostics.Debug"/> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg1">The first object to format</param>
@@ -243,7 +244,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Debug"/> level.
+        /// Logs a formatted message string with the <see cref="System.Diagnostics.Debug"/> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg1">The first object to format</param>
@@ -262,7 +263,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Debug"/> level.
+        /// Logs a formatted message string with the <see cref="System.Diagnostics.Debug"/> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="args">An Object array containing zero or more objects to format</param>
@@ -283,7 +284,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Debug"/> level.
+        /// Logs a formatted message string with the <see cref="System.Diagnostics.Debug"/> level.
         /// </summary>
         /// <param name="provider">An <see cref= "T:System.IFormatProvider" /> that supplies culture-specific formatting information</param>
         /// <param name="format">A String containing zero or more format items</param>
@@ -305,13 +306,13 @@
         }
 
         /// <summary>
-        /// Logs a message object with the <see cref="LogLevel.Info"/> level.
+        /// Logs a message object with the <see cref="EasyLogLevel.Info"/> level.
         /// </summary>
         /// <param name="message">The message object to be logged.</param>
         /// <remarks>
         /// <para>
         /// This method first checks if this logger is <c>Info</c> enabled by comparing the level of 
-        /// this logger with the <see cref="LogLevel.Info"/> level. If this logger is <c>Info</c> 
+        /// this logger with the <see cref="EasyLogLevel.Info"/> level. If this logger is <c>Info</c> 
         /// enabled, then it converts the message object (passed as parameter) to a string by invoking the appropriate
         /// <see cref="T:log4net.ObjectRenderer.IObjectRenderer"/>. It then proceeds to call all the registered appenders 
         /// in this logger  and also higher in the hierarchy depending on the value of the additivity flag.
@@ -329,7 +330,7 @@
         }
 
         /// <summary>
-        /// Logs a message object with the <see cref="LogLevel.Info"/> level including 
+        /// Logs a message object with the <see cref="EasyLogLevel.Info"/> level including 
         /// the stack trace of the <see cref="T:System.Exception"/> passed as a parameter.
         /// </summary>
         /// <param name="message">The message object to be logged.</param>
@@ -341,7 +342,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Info"/> level.
+        /// Logs a formatted message string with the <see cref="EasyLogLevel.Info"/> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg">The object to format</param>
@@ -363,7 +364,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Info"/> level.
+        /// Logs a formatted message string with the <see cref="EasyLogLevel.Info"/> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg1">The first object to format</param>
@@ -381,7 +382,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Info"/> level.
+        /// Logs a formatted message string with the <see cref="EasyLogLevel.Info"/> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg1">The first object to format</param>
@@ -400,7 +401,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Info"/> level.
+        /// Logs a formatted message string with the <see cref="EasyLogLevel.Info"/> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="args">An Object array containing zero or more objects to format</param>
@@ -421,7 +422,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Info"/> level.
+        /// Logs a formatted message string with the <see cref="EasyLogLevel.Info"/> level.
         /// </summary>
         /// <param name="provider">An <see cref= "T:System.IFormatProvider" /> that supplies culture-specific formatting information</param>
         /// <param name="format">A String containing zero or more format items</param>
@@ -443,13 +444,13 @@
         }
 
         /// <summary>
-        /// Logs a message object with the <see cref="LogLevel.Warn"/> level.
+        /// Logs a message object with the <see cref="EasyLogLevel.Warn"/> level.
         /// </summary>
         /// <param name="message">The message object to be logged.</param>
         /// <remarks>
         /// <para>
         /// This method first checks if this logger is <c>Warn</c> enabled by comparing the level of 
-        /// this logger with the <see cref="LogLevel.Warn"/> level. If this logger is <c>Warn</c> 
+        /// this logger with the <see cref="EasyLogLevel.Warn"/> level. If this logger is <c>Warn</c> 
         /// enabled, then it converts the message object (passed as parameter) to a string by invoking the appropriate
         /// <see cref="T:log4net.ObjectRenderer.IObjectRenderer"/>. It then proceeds to call all the registered appenders 
         /// in this logger  and also higher in the hierarchy depending on the value of the additivity flag.
@@ -467,7 +468,7 @@
         }
 
         /// <summary>
-        /// Logs a message object with the <see cref="LogLevel.Warn"/> level including 
+        /// Logs a message object with the <see cref="EasyLogLevel.Warn"/> level including 
         /// the stack trace of the <see cref="T:System.Exception"/> passed as a parameter.
         /// </summary>
         /// <param name="message">The message object to be logged.</param>
@@ -479,7 +480,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Warn"/> level.
+        /// Logs a formatted message string with the <see cref="EasyLogLevel.Warn"/> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg">The object to format</param>
@@ -501,7 +502,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Warn"/> level.
+        /// Logs a formatted message string with the <see cref="EasyLogLevel.Warn"/> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg1">The first object to format</param>
@@ -519,7 +520,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Warn"/> level.
+        /// Logs a formatted message string with the <see cref="EasyLogLevel.Warn"/> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg1">The first object to format</param>
@@ -538,7 +539,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Warn"/> level.
+        /// Logs a formatted message string with the <see cref="EasyLogLevel.Warn"/> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="args">An Object array containing zero or more objects to format</param>
@@ -559,7 +560,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Warn"/> level.
+        /// Logs a formatted message string with the <see cref="EasyLogLevel.Warn"/> level.
         /// </summary>
         /// <param name="provider">An <see cref= "T:System.IFormatProvider" /> that supplies culture-specific formatting information</param>
         /// <param name="format">A String containing zero or more format items</param>
@@ -581,13 +582,13 @@
         }
 
         /// <summary>
-        /// Logs a message object with the <see cref="LogLevel.Error"/> level.
+        /// Logs a message object with the <see cref="EasyLogLevel.Error"/> level.
         /// </summary>
         /// <param name="message">The message object to be logged.</param>
         /// <remarks>
         /// <para>
         /// This method first checks if this logger is <c>Error</c> enabled by comparing the level of 
-        /// this logger with the <see cref="LogLevel.Error"/> level. If this logger is <c>Error</c> 
+        /// this logger with the <see cref="EasyLogLevel.Error"/> level. If this logger is <c>Error</c> 
         /// enabled, then it converts the message object (passed as parameter) to a string by invoking the appropriate
         /// <see cref="T:log4net.ObjectRenderer.IObjectRenderer"/>. It then proceeds to call all the registered appenders 
         /// in this logger  and also higher in the hierarchy depending on the value of the additivity flag.
@@ -605,7 +606,7 @@
         }
 
         /// <summary>
-        /// Logs a message object with the <see cref="LogLevel.Error"/> level including 
+        /// Logs a message object with the <see cref="EasyLogLevel.Error"/> level including 
         /// the stack trace of the <see cref="T:System.Exception"/> passed as a parameter.
         /// </summary>
         /// <param name="message">The message object to be logged.</param>
@@ -617,7 +618,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Error"/> level.
+        /// Logs a formatted message string with the <see cref="EasyLogLevel.Error"/> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg">The object to format</param>
@@ -639,7 +640,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Error"/> level.
+        /// Logs a formatted message string with the <see cref="EasyLogLevel.Error"/> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg1">The first object to format</param>
@@ -657,7 +658,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Error"/> level.
+        /// Logs a formatted message string with the <see cref="EasyLogLevel.Error"/> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg1">The first object to format</param>
@@ -676,7 +677,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Error"/> level.
+        /// Logs a formatted message string with the <see cref="EasyLogLevel.Error"/> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="args">An Object array containing zero or more objects to format</param>
@@ -697,7 +698,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Error"/> level.
+        /// Logs a formatted message string with the <see cref="EasyLogLevel.Error"/> level.
         /// </summary>
         /// <param name="provider">An <see cref= "T:System.IFormatProvider" /> that supplies culture-specific formatting information</param>
         /// <param name="format">A String containing zero or more format items</param>
@@ -719,13 +720,13 @@
         }
 
         /// <summary>
-        /// Logs a message object with the <see cref="LogLevel.Fatal"/> level.
+        /// Logs a message object with the <see cref="EasyLogLevel.Fatal"/> level.
         /// </summary>
         /// <param name="message">The message object to be logged.</param>
         /// <remarks>
         /// <para>
         /// This method first checks if this logger is <c>Fatal</c> enabled by comparing the level of 
-        /// this logger with the <see cref="LogLevel.Fatal"/> level. If this logger is <c>Fatal</c> 
+        /// this logger with the <see cref="EasyLogLevel.Fatal"/> level. If this logger is <c>Fatal</c> 
         /// enabled, then it converts the message object (passed as parameter) to a string by invoking the appropriate
         /// <see cref="T:log4net.ObjectRenderer.IObjectRenderer"/>. It then proceeds to call all the registered appenders 
         /// in this logger  and also higher in the hierarchy depending on the value of the additivity flag.
@@ -743,7 +744,7 @@
         }
 
         /// <summary>
-        /// Logs a message object with the <see cref="LogLevel.Fatal"/> level including 
+        /// Logs a message object with the <see cref="EasyLogLevel.Fatal"/> level including 
         /// the stack trace of the <see cref="T:System.Exception"/> passed as a parameter.
         /// </summary>
         /// <param name="message">The message object to be logged.</param>
@@ -755,7 +756,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Fatal"/> level.
+        /// Logs a formatted message string with the <see cref="EasyLogLevel.Fatal"/> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg">The object to format</param>
@@ -777,7 +778,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Fatal"/> level.
+        /// Logs a formatted message string with the <see cref="EasyLogLevel.Fatal"/> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg1">The first object to format</param>
@@ -795,7 +796,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Fatal"/> level.
+        /// Logs a formatted message string with the <see cref="EasyLogLevel.Fatal"/> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg1">The first object to format</param>
@@ -814,7 +815,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Fatal"/> level.
+        /// Logs a formatted message string with the <see cref="EasyLogLevel.Fatal"/> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="args">An Object array containing zero or more objects to format</param>
@@ -835,7 +836,7 @@
         }
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="LogLevel.Fatal"/> level.
+        /// Logs a formatted message string with the <see cref="EasyLogLevel.Fatal"/> level.
         /// </summary>
         /// <param name="provider">An <see cref= "T:System.IFormatProvider" /> that supplies culture-specific formatting information</param>
         /// <param name="format">A String containing zero or more format items</param>
@@ -876,32 +877,32 @@
         }
 
         /// <summary>
-        /// Flag indicating whether the logger is enabled for <see cref="LogLevel.Trace"/> messages.
+        /// Flag indicating whether the logger is enabled for <see cref="System.Diagnostics.Trace"/> messages.
         /// </summary>
         public bool IsTraceEnabled => _logger.Logger.IsEnabledFor(TraceLevel);
 
         /// <summary>
-        /// Flag indicating whether the logger is enabled for <see cref="LogLevel.Debug"/> messages.
+        /// Flag indicating whether the logger is enabled for <see cref="System.Diagnostics.Debug"/> messages.
         /// </summary>
         public bool IsDebugEnabled => _logger.IsDebugEnabled;
 
         /// <summary>
-        /// Flag indicating whether the logger is enabled for <see cref="LogLevel.Info"/> messages.
+        /// Flag indicating whether the logger is enabled for <see cref="EasyLogLevel.Info"/> messages.
         /// </summary>
         public bool IsInfoEnabled => _logger.IsInfoEnabled;
 
         /// <summary>
-        /// Flag indicating whether the logger is enabled for <see cref="LogLevel.Warn"/> messages.
+        /// Flag indicating whether the logger is enabled for <see cref="EasyLogLevel.Warn"/> messages.
         /// </summary>
         public bool IsWarnEnabled => _logger.IsWarnEnabled;
 
         /// <summary>
-        /// Flag indicating whether the logger is enabled for <see cref="LogLevel.Error"/> messages.
+        /// Flag indicating whether the logger is enabled for <see cref="EasyLogLevel.Error"/> messages.
         /// </summary>
         public bool IsErrorEnabled => _logger.IsErrorEnabled;
 
         /// <summary>
-        /// Flag indicating whether the logger is enabled for <see cref="LogLevel.Fatal"/> messages.
+        /// Flag indicating whether the logger is enabled for <see cref="EasyLogLevel.Fatal"/> messages.
         /// </summary>
         public bool IsFatalEnabled => _logger.IsFatalEnabled;
     }
