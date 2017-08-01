@@ -52,7 +52,7 @@ The above logging results in the the following log entries (based on the [sample
 ```
 
 ### Scoped logging:
-Sometimes you need to log the entry and exit point of an operation so instead of having to log that manually we can use the scoping feature of the library:
+Sometimes you need to log the entry and exit points of an operation so instead of having to log that manually we can use the scoping feature of the library:
 
 ```csharp
 using (logger.GetScopedLogger("SomeScope", LogLevel.Debug))
