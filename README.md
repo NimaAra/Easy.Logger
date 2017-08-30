@@ -119,4 +119,6 @@ The library does not need to be disposed explicitly as the framework takes care 
 logService.Dispose();
 ```
 
-* NuGet at: https://www.nuget.org/packages/Easy.Logger/
+### NuGet
+* [Easy.Logger](https://www.nuget.org/packages/Easy.Logger/)
+* [Easy.Logger.Interfaces](https://www.nuget.org/packages/Easy.Logger.Interfaces/)
