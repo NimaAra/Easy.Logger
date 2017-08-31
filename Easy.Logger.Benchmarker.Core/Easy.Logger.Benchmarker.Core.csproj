@@ -7,6 +7,8 @@
 
   <PropertyGroup>
     <ServerGarbageCollection>true</ServerGarbageCollection>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\Easy.Loger.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,6 +22,9 @@
     </None>
     <None Update="log4net.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>	
+    <None Include="..\Easy.Loger.snk">
+      <Link>Easy.Loger.snk</Link>
     </None>
   </ItemGroup>
 
