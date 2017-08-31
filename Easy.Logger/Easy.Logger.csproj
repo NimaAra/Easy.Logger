@@ -21,6 +21,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\Easy.Loger.snk" Link="Easy.Loger.snk" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="bin\Release\net40\Easy.Logger.xml">
       <Pack>true</Pack>
     </None>
@@ -31,6 +35,9 @@
     <AssemblyVersion>0.0.0.0</AssemblyVersion>
     <FileVersion>0.0.0.0</FileVersion>
     <PackageReleaseNotes>-</PackageReleaseNotes>
+    <SignAssembly>true</SignAssembly>
+    <DelaySign>false</DelaySign>
+    <AssemblyOriginatorKeyFile>..\Easy.Loger.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">

@@ -4,4 +4,4 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("Easy.Logger")]
 [assembly: AssemblyCopyright("Copyright © 2017")]
 
-[assembly: InternalsVisibleTo("Easy.Logger.Tests.Unit")]
+[assembly: InternalsVisibleTo("Easy.Logger.Tests.Unit, PublicKey=002400000480000094000000060200000024000052534131000400000100010075e67e69600db032a83657f81c778b739fbb523fa2e02c160c6c3dd50eadc4b7a37ab6d4922919360aea3670849a17729a1dbed446ffda3224f6ed463143a05c2008272e4a0f03f30872290efbf08a2bc63a052dbdb72de493beb99b876ecb1235f526a89c108f695687ad684f41ead9b55b670bf25a936994f98b5ad419f6c5")]
