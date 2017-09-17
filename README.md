@@ -121,7 +121,7 @@ logService.Dispose();
 ```
 
 ## Easy Logger Extensions
-The [_Easy.Logger.Extensions_](https://github.com/NimaAra/Easy.Logger/tree/master/Easy.Logger.Extensions) package offers more functionality to extend _log4net_. The package currently contains the [HTTPAppender](https://github.com/NimaAra/Easy.Logger/blob/master/Easy.Logger.Extensions/HTTPAppender.cs) which uses the `HTTPClient` to _POST_ _JSON_ payloads of log events to an endpoint. Take following configuration as an example:
+The [_Easy.Logger.Extensions_*](https://github.com/NimaAra/Easy.Logger/tree/master/Easy.Logger.Extensions) package offers more functionality to extend _log4net_. The package currently contains the [HTTPAppender](https://github.com/NimaAra/Easy.Logger/blob/master/Easy.Logger.Extensions/HTTPAppender.cs) which uses the `HTTPClient` to _POST_ _JSON_ payloads of log events to an endpoint. Take following configuration as an example:
 
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>
