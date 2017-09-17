@@ -14,8 +14,10 @@
     /// </summary>
     public sealed class Log4NetService : ILogService
     {
-        private static readonly Lazy<Log4NetService> Lazy = new Lazy<Log4NetService>(() => new Log4NetService(), true);
         private readonly ILoggerRepository _repository;
+
+        private static readonly Lazy<Log4NetService> Lazy = 
+            new Lazy<Log4NetService>(() => new Log4NetService(), true);
 
         /// <summary>
         /// Returns a single instance of the <see cref="Log4NetService"/>
@@ -23,14 +25,12 @@
         public static Log4NetService Instance => Lazy.Value;
 
         /// <summary>
-        /// Creates and configures an instance of the <see cref="Log4NetService"/> by looking for a default
-        /// <c>log4net.config</c> file in the executing directory. It gets the directory
-        /// path of the calling application <c>RelativeSearchPath</c> IS NULL if the
-        /// executing assembly i.e. calling assembly is a stand-alone assembly file
-        /// (Console, WinForm, etc). <c>RelativeSearchPath</c> IS NOT NULL if the 
-        /// calling assembly is a web hosted application i.e. a WebSite
+        /// Creates and configures an instance of the <see cref="Log4NetService"/> by looking for a 
+        /// default <c>log4net.config</c> file in the executing directory and monitoring it for changes.
         /// </summary>
-        /// <exception cref="FileNotFoundException">Thrown when a valid <c>log4net.config</c> file is not found</exception>
+        /// <exception cref="FileNotFoundException">
+        /// Thrown when a valid <c>log4net.config</c> file is not found.
+        /// </exception>
         private Log4NetService()
         {
             string log4NetConfigDir;
@@ -57,19 +57,29 @@
         public FileInfo Configuration { get; private set; }
 
         /// <summary>
-        /// Provides an override to configures the <see cref="Log4NetService"/> using the <paramref name="configFile"/>.
+        /// Provides an override to configure the <see cref="Log4NetService"/> with a valid <c>log4net</c>
+        /// config file represented as <paramref name="configFile"/> and monitor any changes to it.
         /// </summary> 
-        /// <param name="configFile">Path to a valid log4net config file</param>
-        /// <exception cref="ArgumentException">Thrown when log4net Config file is null</exception>
-        /// <exception cref="FileNotFoundException">Thrown when a valid <c>log4net.config</c> file is not found</exception>
+        /// <param name="configFile">Points to a valid log4net config file.</param>
+        /// <exception cref="ArgumentException">Thrown when <c>log4net</c> config file is null.</exception>
+        /// <exception cref="FileNotFoundException">Thrown when a valid <c>log4net.config</c> file is not found.</exception>
         /// <remarks>
         /// If this method is not used, the <see cref="Log4NetService"/> will be configured by looking for a 
         /// default <c>log4net.config</c> file in the executing directory.
         /// </remarks>
         public void Configure(FileInfo configFile)
         {
-            if (configFile == null) { throw new ArgumentException("Config file cannot be null", nameof(configFile)); }
-            if (!configFile.Exists) { throw new FileNotFoundException("Could not find a valid log4net configuration file", configFile.FullName); }
+            if (configFile == null)
+            {
+                throw new ArgumentException(nameof(configFile) + " cannot be null", nameof(configFile));
+            }
+
+            if (!configFile.Exists)
+            {
+                throw new FileNotFoundException(
+                    "Could not find a valid log4net configuration file", 
+                    configFile.FullName);
+            }
 
             XmlConfigurator.ConfigureAndWatch(_repository, configFile);
             Configuration = configFile;
@@ -84,7 +94,7 @@
         [DebuggerStepThrough]
         public IEasyLogger GetLogger(Type loggerType)
         {
-            if (Configuration == null) { throw new InvalidOperationException($"{GetType().Name} needs to be configured with a valid configuration file."); }
+            EnsureConfigured();
             return new Log4NetLogger(LogManager.GetLogger(loggerType));
         }
 
@@ -97,7 +107,7 @@
         [DebuggerStepThrough]
         public IEasyLogger GetLogger(string loggerName)
         {
-            if (Configuration == null) { throw new InvalidOperationException($"{GetType().Name} needs to be configured with a valid configuration file."); }
+            EnsureConfigured();
             return new Log4NetLogger(LogManager.GetLogger(_repository.Name, loggerName));
         }
 
@@ -108,18 +118,20 @@
         /// <exception cref="InvalidOperationException">Thrown if <see cref="Log4NetService"/> is not configured with a valid configuration file.</exception>
         /// <returns>The <see cref="IEasyLogger"/>An instance of the logger.</returns>
         [DebuggerStepThrough]
-        public IEasyLogger GetLogger<T>()
-        {
-            return GetLogger(typeof(T));
-        }
+        public IEasyLogger GetLogger<T>() => GetLogger(typeof(T));
 
         /// <summary>
         /// Disposes the <see cref="Log4NetService"/>
         /// </summary>
         [DebuggerStepThrough]
-        public void Dispose()
+        public void Dispose() => LogManager.Shutdown();
+
+        private void EnsureConfigured()
         {
-            LogManager.Shutdown();
+            if (Configuration != null) { return; }
+
+            throw new InvalidOperationException(
+                GetType().Name + " needs to be configured with a valid configuration file.");
         }
     }
 }

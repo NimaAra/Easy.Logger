@@ -8,6 +8,11 @@
     /// </summary>
     public struct ScopedLogger : IDisposable
     {
+        private const string OpenLeft = "[/ ";
+        private const string OpenRight = @" \]";
+        private const string CloseLeft = @"[\ ";
+        private const string CloseRight = " /]";
+
         private readonly IEasyLogger _logger;
         private readonly string _scopeName;
         private readonly EasyLogLevel _level;
@@ -18,13 +23,13 @@
             _logger = logger;
             _level = level;
 
-            Log("[-BEGIN---> " + _scopeName + "]");
+            Log(string.Concat(OpenLeft, _scopeName, OpenRight));
         }
 
         /// <summary>
         /// Closes the scope.
         /// </summary>
-        public void Dispose() => Log("[--END----> " + _scopeName + "]");
+        public void Dispose() => Log(string.Concat(CloseLeft, _scopeName, CloseRight));
 
         private void Log(string message)
         {

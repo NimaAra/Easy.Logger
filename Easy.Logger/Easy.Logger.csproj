@@ -21,10 +21,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Easy.Logger.Interfaces" Version="1.0.0" />
+    <PackageReference Include="log4net" Version="2.0.8" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="bin\Release\net40\Easy.Logger.xml">
       <Pack>true</Pack>
     </None>
   </ItemGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\net40\Easy.Logger.xml</DocumentationFile>
+  </PropertyGroup>
 
   <PropertyGroup>
     <TargetFrameworks>netstandard1.3;net40</TargetFrameworks>
@@ -54,15 +63,6 @@
     <PackageReference Include="System.Collections.Concurrent" Version="4.3.0" />
     <PackageReference Include="System.Reflection" Version="4.3.0" />
     <PackageReference Include="System.Diagnostics.Debug" Version="4.3.0" />
-  </ItemGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\net40\Easy.Logger.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Easy.Logger.Interfaces" Version="1.0.0" />
-    <PackageReference Include="log4net" Version="2.0.8" />
   </ItemGroup>
 
 </Project>

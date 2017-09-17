@@ -2,6 +2,7 @@
 {
     using System;
     using System.Globalization;
+    using Easy.Logger.Extensions;
     using Easy.Logger.Interfaces;
     using log4net;
     using log4net.Core;
@@ -247,26 +248,26 @@
             // First try with Debug
             using (_logger.GetScopedLogger("Foo", EasyLogLevel.Debug))
             {
-                _mockedLogger.Verify(l => l.Debug("[-BEGIN---> Foo]"), Times.Once);
+                _mockedLogger.Verify(l => l.Debug(@"[/ Foo \]"), Times.Once);
                 
                 _logger.WarnFormat("bar {0}", "is closed");
 
                 _mockedLogger.Verify(l => l.WarnFormat("bar {0}", "is closed"), Times.Once);
             }
 
-            _mockedLogger.Verify(l => l.Debug("[--END----> Foo]"), Times.Once);
+            _mockedLogger.Verify(l => l.Debug(@"[\ Foo /]"), Times.Once);
 
             // Now try Fatal
             using (_logger.GetScopedLogger("DummyScope", EasyLogLevel.Fatal))
             {
-                _mockedLogger.Verify(l => l.Fatal("[-BEGIN---> DummyScope]"), Times.Once);
+                _mockedLogger.Verify(l => l.Fatal(@"[/ DummyScope \]"), Times.Once);
 
                 _logger.WarnFormat("bar {0}", "is opened");
 
                 _mockedLogger.Verify(l => l.WarnFormat("bar {0}", "is opened"), Times.Once);
             }
 
-            _mockedLogger.Verify(l => l.Fatal("[--END----> DummyScope]"), Times.Once);
+            _mockedLogger.Verify(l => l.Fatal(@"[\ DummyScope /]"), Times.Once);
         }
     }
 }

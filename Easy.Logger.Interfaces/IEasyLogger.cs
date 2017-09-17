@@ -12,7 +12,43 @@
         /// Gets the logger name.
         /// </summary>
         string Name { get; }
-        
+
+        /// <summary>
+        /// Gets the flag indicating whether the logger is enabled for 
+        /// <see cref="EasyLogLevel.Trace"/> messages.
+        /// </summary>
+        bool IsTraceEnabled { get; }
+
+        /// <summary>
+        /// Gets the flag indicating whether the logger is enabled for 
+        /// <see cref="System.Diagnostics.Debug"/> messages.
+        /// </summary>
+        bool IsDebugEnabled { get; }
+
+        /// <summary>
+        /// Gets the flag indicating whether the logger is enabled for 
+        /// <see cref="EasyLogLevel.Info"/> messages.
+        /// </summary>
+        bool IsInfoEnabled { get; }
+
+        /// <summary>
+        /// Gets the flag indicating whether the logger is enabled for 
+        /// <see cref="EasyLogLevel.Warn"/> messages.
+        /// </summary>
+        bool IsWarnEnabled { get; }
+
+        /// <summary>
+        /// Gets the flag indicating whether the logger is enabled for 
+        /// <see cref="EasyLogLevel.Error"/> messages.
+        /// </summary>
+        bool IsErrorEnabled { get; }
+
+        /// <summary>
+        /// Gets the flag indicating whether the logger is enabled for 
+        /// <see cref="EasyLogLevel.Fatal"/> messages.
+        /// </summary>
+        bool IsFatalEnabled { get; }
+
         /// <summary>
         /// Logs a <see cref="EasyLogLevel.Trace"/> level message object.
         /// </summary>
@@ -336,35 +372,5 @@
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="args">An Object array containing zero or more objects to format</param>
         void FatalFormat(IFormatProvider provider, string format, params object[] args);
-
-        /// <summary>
-        /// Flag indicating whether the logger is enabled fur <see cref="EasyLogLevel.Trace"/> messages
-        /// </summary>
-        bool IsTraceEnabled { get; }
-
-        /// <summary>
-        /// Flag indicating whether the logger is enabled fur <see cref="EasyLogLevel.Debug"/> messages
-        /// </summary>
-        bool IsDebugEnabled { get; }
-
-        /// <summary>
-        /// Flag indicating whether the logger is enabled fur <see cref="EasyLogLevel.Info"/> messages
-        /// </summary>
-        bool IsInfoEnabled { get; }
-
-        /// <summary>
-        /// Flag indicating whether the logger is enabled fur <see cref="EasyLogLevel.Warn"/> messages
-        /// </summary>
-        bool IsWarnEnabled { get; }
-
-        /// <summary>
-        /// Flag indicating whether the logger is enabled fur <see cref="EasyLogLevel.Error"/> messages
-        /// </summary>
-        bool IsErrorEnabled { get; }
-
-        /// <summary>
-        /// Flag indicating whether the logger is enabled fur <see cref="EasyLogLevel.Fatal"/> messages
-        /// </summary>
-        bool IsFatalEnabled { get; }
     }
 }

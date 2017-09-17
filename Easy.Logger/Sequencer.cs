@@ -147,7 +147,12 @@
         {
             _isShutdownRequested = true;
             _queue.CompleteAdding();
-            if (waitForPendingItems) { _worker.Wait(); }
+
+            if (waitForPendingItems)
+            {
+                try { _worker.Wait(); } catch (Exception) { /* ignored */ } 
+            }
+
             _cts.Cancel();
             _cts.Dispose();
             _queue.Dispose();
@@ -186,10 +191,7 @@
         /// Creates an instance of the <see cref="Sequencer{T}"/>
         /// </summary>
         /// <param name="e">The <see cref="System.Exception"/></param>
-        public SequencerExceptionEventArgs(SequencerException e)
-        {
-            Exception = e;
-        }
+        public SequencerExceptionEventArgs(SequencerException e) => Exception = e;
 
         /// <summary>
         /// The <see cref="System.Exception"/> raised by the <see cref="Sequencer{T}"/>.

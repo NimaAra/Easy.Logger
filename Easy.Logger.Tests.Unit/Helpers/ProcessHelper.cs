@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.Diagnostics;
 
-    public static class ProcessHelper
+    internal static class ProcessHelper
     {
         public static Process GetProcess(string processPath, IList<string> outputMessages)
         {

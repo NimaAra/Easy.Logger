@@ -54,17 +54,23 @@
     <Compile Include="AsyncBufferingForwardingAppenderTests.cs" />
     <Compile Include="CreatingNewLog4NetServiceTests.cs" />
     <Compile Include="Helpers\ProcessHelper.cs" />
+    <Compile Include="HTTPAppenderTests.cs" />
     <Compile Include="Log4NetLoggerTests.cs" />
+    <Compile Include="LoggingEventExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Easy.Logger.Interfaces\Easy.Logger.Interfaces.csproj">
-      <Project>{80248afd-52ed-47a0-b077-97ae8dc067cf}</Project>
-      <Name>Easy.Logger.Interfaces</Name>
+    <ProjectReference Include="..\Easy.Logger.Extensions\Easy.Logger.Extensions.csproj">
+      <Project>{84135fc0-fe53-47ac-ab47-fc5b0cdb2ecd}</Project>
+      <Name>Easy.Logger.Extensions</Name>
     </ProjectReference>
     <ProjectReference Include="..\Easy.Logger\Easy.Logger.csproj">
       <Project>{f1cfacd6-414e-4921-90fd-0949764e1756}</Project>
       <Name>Easy.Logger</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Easy.Logger.Interfaces\Easy.Logger.Interfaces.csproj">
+      <Project>{80248afd-52ed-47a0-b077-97ae8dc067cf}</Project>
+      <Name>Easy.Logger.Interfaces</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

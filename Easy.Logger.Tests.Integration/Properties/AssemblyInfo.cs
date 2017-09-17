@@ -4,8 +4,8 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Easy.Logger.Tests.Unit")]
-[assembly: AssemblyProduct("Easy.Logger.Tests.Unit")]
+[assembly: AssemblyTitle("Easy.Logger.Tests.Integration")]
+[assembly: AssemblyProduct("Easy.Logger.Tests.Integration")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
@@ -14,7 +14,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("3f18eca6-b525-469c-bce6-a75e2ed9f5d5")]
+[assembly: Guid("f9a7eb15-6ea6-4512-a6f9-a9a23c78b10f")]
 
 // Version information for an assembly consists of the following four values:
 //

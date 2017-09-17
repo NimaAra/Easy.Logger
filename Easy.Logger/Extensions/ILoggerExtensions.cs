@@ -1,4 +1,4 @@
-﻿namespace Easy.Logger
+﻿namespace Easy.Logger.Extensions
 {
     using Easy.Logger.Interfaces;
 
@@ -16,9 +16,7 @@
         /// <param name="name">The name of the scope</param>
         /// <param name="level">The level at which the scope should be logged</param>
         /// <returns>The scoped logger</returns>
-        public static ScopedLogger GetScopedLogger(this IEasyLogger logger, string name, EasyLogLevel level)
-        {
-            return new ScopedLogger(logger, name, level);
-        }
+        public static ScopedLogger GetScopedLogger(this IEasyLogger logger, string name, EasyLogLevel level) => 
+            new ScopedLogger(logger, name, level);
     }
 }
