@@ -2,7 +2,6 @@
 {
     using System;
     using System.Globalization;
-    using Easy.Logger.Extensions;
     using Easy.Logger.Interfaces;
     using log4net;
     using log4net.Core;

@@ -20,7 +20,7 @@ namespace Easy.Logger.Tests.Integration.Models
         public string LoggerName { get; set; }
         public string Level { get; set; }
         public string ThreadID { get; set; }
-        public string RenderedMessage { get; set; }
+        public string Message { get; set; }
         public Exception Exception { get; set; }
     }
 

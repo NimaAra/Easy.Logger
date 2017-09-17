@@ -1,4 +1,5 @@
-﻿namespace Easy.Logger.Extensions
+﻿// ReSharper disable once CheckNamespace
+namespace Easy.Logger
 {
     using Easy.Logger.Interfaces;
 

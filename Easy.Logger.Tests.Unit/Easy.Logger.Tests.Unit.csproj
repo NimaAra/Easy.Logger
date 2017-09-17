@@ -56,7 +56,6 @@
     <Compile Include="Helpers\ProcessHelper.cs" />
     <Compile Include="HTTPAppenderTests.cs" />
     <Compile Include="Log4NetLoggerTests.cs" />
-    <Compile Include="LoggingEventExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

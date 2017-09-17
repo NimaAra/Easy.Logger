@@ -127,7 +127,7 @@
                     curr.LoggerName,
                     Level = curr.Level?.DisplayName,
                     ThreadID = curr.ThreadName,
-                    curr.RenderedMessage,
+                    Message = curr.RenderedMessage,
                     Exception = curr.ExceptionObject
                 };
             }
