@@ -6,7 +6,6 @@
     using System.IO;
     using System.Linq;
     using System.Net;
-    using System.Net.Http;
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading;
@@ -14,6 +13,7 @@
     using Easy.Logger.Interfaces;
     using Easy.Logger.Tests.Integration.Models;
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Serialization;
     using NUnit.Framework;
     using Shouldly;
 
@@ -22,7 +22,7 @@
     {
         private ILogService _logService;
         private FileInfo _configFile, _logFile;
-        private SimpleHttpListener _listener;
+        private EasyLogListener _listener;
         private ConcurrentQueue<LogPayload> _receivedPayloads;
 
         [SetUp]
@@ -183,43 +183,31 @@
                 .Single(e => e.Attributes().Any(a => a.Name == "name" && a.Value == "HTTPAppender"))
                 .Elements("endpoint")
                 .Single()
-                .Attribute("value")
-                .Value;
+                .Attribute("value")?.Value;
 
-            _listener = new SimpleHttpListener(new Uri(endpointStr));
+            _listener = new EasyLogListener(
+                new Uri(endpointStr ?? throw new InvalidOperationException()),
+                Deserializer);
+
             _listener.OnError += (sender, exception) => throw exception;
-            _listener.OnRequest += (sender, context) =>
-            {
-                var req = context.Request;
-                var resp = context.Response;
-
-                if (req.HttpMethod == HttpMethod.Post.ToString())
-                {
-                    var payload = DeserializeFromStream<LogPayload>(req.InputStream);
-                    _receivedPayloads.Enqueue(payload);
-
-                    resp.StatusCode = (int)HttpStatusCode.Accepted;
-                } else
-                {
-                    resp.StatusCode = (int)HttpStatusCode.NotAcceptable;
-                    var reply = Encoding.UTF8.GetBytes("You can only POST.");
-                    resp.OutputStream.Write(reply, 0, reply.Length);
-                }
-
-                resp.Close();
-            };
-
+            _listener.OnPayload += (sender, payload) => _receivedPayloads.Enqueue(payload);
             _listener.ListenAsync();
-        }
 
-        private static T DeserializeFromStream<T>(Stream stream)
-        {
-            var serializer = new JsonSerializer();
-            
-            using (var sr = new StreamReader(stream, Encoding.UTF8))
-            using (var jsonTextReader = new JsonTextReader(sr))
+            LogPayload Deserializer(Stream stream)
             {
-                return serializer.Deserialize<T>(jsonTextReader);
+                var serializer = new JsonSerializer
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                    DateFormatHandling = DateFormatHandling.IsoDateFormat,
+                    DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+                    Formatting = Formatting.None
+                };
+
+                using (var sr = new StreamReader(stream, Encoding.UTF8))
+                using (var jsonTextReader = new JsonTextReader(sr))
+                {
+                    return serializer.Deserialize<LogPayload>(jsonTextReader);
+                }
             }
         }
     }
