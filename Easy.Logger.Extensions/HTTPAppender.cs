@@ -13,6 +13,7 @@
     /// </summary>
     public sealed class HTTPAppender : AppenderSkeleton
     {
+        private readonly ManualResetEventSlim _waitHandle;
         private readonly HttpClient _client;
         private readonly ThreadLocal<LoggingEvent[]> _singleLogEventPool;
         private readonly string _pid;
@@ -26,6 +27,7 @@
         /// </summary>
         public HTTPAppender()
         {
+            _waitHandle = new ManualResetEventSlim();
             _client = new HttpClient();
             _singleLogEventPool = new ThreadLocal<LoggingEvent[]>(() => new LoggingEvent[1]);
 
@@ -87,12 +89,16 @@
         /// </summary>
         protected override void OnClose()
         {
-            base.OnClose();
+            _waitHandle.Wait(TimeSpan.FromSeconds(1));
+            _waitHandle.Dispose();
             _client.Dispose();
+
+            base.OnClose();
         }
 
         private async void Post(LoggingEvent[] logEvents)
         {
+            _waitHandle.Reset();
             var payload = new
             {
                 PID = _pid,
@@ -112,6 +118,7 @@
                 // Try once more
                 await _client.PostAsync(Endpoint, content).ConfigureAwait(false);
             }
+            _waitHandle.Set();
         }
 
         // ReSharper disable once SuggestBaseTypeForParameter
