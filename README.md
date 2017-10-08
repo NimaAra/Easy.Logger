@@ -121,7 +121,7 @@ logService.Dispose();
 ```
 
 ## Easy Logger Extensions
-The [_Easy.Logger.Extensions_*](https://github.com/NimaAra/Easy.Logger/tree/master/Easy.Logger.Extensions) package offers more functionality to extend _log4net_. The package currently contains the [HTTPAppender](https://github.com/NimaAra/Easy.Logger/blob/master/Easy.Logger.Extensions/HTTPAppender.cs) which uses the `HTTPClient` to _POST_ _JSON_ payloads of log events to an endpoint. Take following configuration as an example:
+The [_Easy.Logger.Extensions_*](https://github.com/NimaAra/Easy.Logger/tree/master/Easy.Logger.Extensions) package offers more functionality to extend _log4net_. The package currently contains the [HTTPAppender](https://github.com/NimaAra/Easy.Logger/blob/master/Easy.Logger.Extensions/HTTPAppender.cs) which uses the `HTTPClient` to _POST_ _JSON_ payloads of log events to an endpoint. Take the following configuration as an example:
 
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>
@@ -170,7 +170,7 @@ The configuration specifies two appenders:
 
 Both of these appenders have been placed inside the `AsyncBufferingForwardingAppender` which buffers and batches up the events then pushes the entries to each of them in order.
 
-So in addition to the log events being persisted to a log file they are also serialized to _JSON_ and asynchronously _POST_ed to an endpoint specified at: `http://localhost:1234`. All of this has been implemented in an efficient manner to reduce _GC_ and overhead.
+So in addition to the log events being persisted to a log file they are also serialized to _JSON_ and asynchronously _POSTed_ to an endpoint specified at: `http://localhost:1234`. All of this has been implemented in an efficient manner to reduce _GC_ and overhead.
 
 A sample Web server (not suitable for production) which only accepts valid log payloads has been implemented as [`EasyLogListener`](https://github.com/NimaAra/Easy.Logger/blob/master/Easy.Logger.Tests.Integration/EasyLogListener.cs) and the models for deserializing the _JSON_ payload can be found in [`LogPayload`](https://github.com/NimaAra/Easy.Logger/blob/master/Easy.Logger.Tests.Integration/Models/LogPayload.cs). For more info on sending and receiving the log messages, take a look at the [Easy.Logger.Tests.Integration](https://github.com/NimaAra/Easy.Logger/tree/master/Easy.Logger.Tests.Integration) project.
 
