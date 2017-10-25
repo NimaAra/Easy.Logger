@@ -152,19 +152,12 @@
             allEntries[2].Message.ShouldBe("Ooops I did it again!");
             allEntries[2].Exception.ShouldNotBeNull();
             
-            allEntries[2].Exception.ClassName.ShouldBe("System.ArgumentNullException");
-            allEntries[2].Exception.Data.ShouldBeNull();
-            allEntries[2].Exception.ExceptionMethod.ShouldBeNull();
+            allEntries[2].Exception.Data.ShouldNotBeNull();
             allEntries[2].Exception.HResult.ShouldBe(-2147467261);
-            allEntries[2].Exception.HelpURL.ShouldBeNull();
             allEntries[2].Exception.InnerException.ShouldBeNull();
             allEntries[2].Exception.Message.ShouldBe("Value cannot be null.");
-            allEntries[2].Exception.ParamName.ShouldBe("cooCoo");
-            allEntries[2].Exception.RemoteStackIndex.ShouldBe(0);
-            allEntries[2].Exception.RemoteStackTraceString.ShouldBeNull();
             allEntries[2].Exception.Source.ShouldBeNull();
-            allEntries[2].Exception.StackTraceString.ShouldBeNull();
-            allEntries[2].Exception.WatsonBuckets.ShouldBeNull();
+            allEntries[2].Exception.StackTrace.ShouldBeNull();
 
             allEntries[3].DateTimeOffset.ShouldBeOfType<DateTimeOffset>();
             allEntries[3].DateTimeOffset.ShouldNotBe(default(DateTimeOffset));
@@ -173,6 +166,8 @@
             allEntries[3].LoggerName.ShouldBe("Easy.Logger.Tests.Integration.Context");
             allEntries[3].Message.ShouldBe("Going home now - System.ApplicationException: CiaoCiao");
             allEntries[3].Exception.ShouldBeNull();
+
+            Array.ForEach(payloads, Console.Write);
         }
 
         private void StartHttpServer()

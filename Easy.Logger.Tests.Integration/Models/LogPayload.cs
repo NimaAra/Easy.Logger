@@ -2,6 +2,7 @@
 namespace Easy.Logger.Tests.Integration.Models
 {
     using System;
+    using System.Text;
 
     public sealed class LogPayload
     {
@@ -12,6 +13,35 @@ namespace Easy.Logger.Tests.Integration.Models
         public DateTimeOffset TimestampUTC { get; set; }
         public int BatchCount { get; set; }
         public LogEntry[] Entries { get; set; }
+
+        public override string ToString()
+        {
+            var builder = new StringBuilder();
+
+            foreach (var e in Entries)
+            {
+                builder.AppendFormat("[{0:yyyy-MM-dd HH:mm:ss,fff}] [{1}] [{2}] [{3}] [{4}] [B:{5,5}] [{6,-5}] [{7,-2}] [{8}] - {9}",
+                    e.DateTimeOffset,
+                    Host,
+                    Sender,
+                    PID,
+                    ProcessName,
+                    BatchCount,
+                    e.Level,
+                    e.ThreadID,
+                    e.LoggerName,
+                    e.Message);
+
+                builder.AppendLine();
+
+                if (e.Exception != null)
+                {
+                    builder.Append("\t").Append(e.Exception).AppendLine();
+                }
+            }
+
+            return builder.ToString();
+        }
     }
 
     public class LogEntry
@@ -22,22 +52,5 @@ namespace Easy.Logger.Tests.Integration.Models
         public string ThreadID { get; set; }
         public string Message { get; set; }
         public Exception Exception { get; set; }
-    }
-
-    public class Exception
-    {
-        public string ClassName { get; set; }
-        public string Message { get; set; }
-        public object Data { get; set; }
-        public object InnerException { get; set; }
-        public object HelpURL { get; set; }
-        public object StackTraceString { get; set; }
-        public object RemoteStackTraceString { get; set; }
-        public int RemoteStackIndex { get; set; }
-        public object ExceptionMethod { get; set; }
-        public int HResult { get; set; }
-        public object Source { get; set; }
-        public object WatsonBuckets { get; set; }
-        public string ParamName { get; set; }
     }
 }
