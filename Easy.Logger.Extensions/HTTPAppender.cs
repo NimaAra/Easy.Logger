@@ -5,6 +5,7 @@
     using System.Net;
     using System.Net.Http;
     using System.Threading;
+    using System.Threading.Tasks;
     using log4net.Appender;
     using log4net.Core;
 
@@ -98,7 +99,6 @@
 
         private async void Post(LoggingEvent[] logEvents)
         {
-            _waitHandle.Reset();
             var payload = new
             {
                 PID = _pid,
@@ -109,16 +109,29 @@
                 BatchCount = Interlocked.Increment(ref _counter),
                 Entries = GetEntries(logEvents)
             };
+            
+            _waitHandle.Reset();
 
+            try
+            {
+                if (!await DoPost(payload).ConfigureAwait(false))
+                {
+                    // Try once more
+                    await DoPost(payload).ConfigureAwait(false);
+                }
+            } finally
+            {
+                _waitHandle.Set();
+            }
+        }
+
+        private async Task<bool> DoPost(object payload)
+        {
             using (var content = new JSONPushStreamContent(payload))
             {
                 var response = await _client.PostAsync(Endpoint, content).ConfigureAwait(false);
-                if (response.IsSuccessStatusCode) { return; }
-                
-                // Try once more
-                await _client.PostAsync(Endpoint, content).ConfigureAwait(false);
+                return response.IsSuccessStatusCode;
             }
-            _waitHandle.Set();
         }
 
         // ReSharper disable once SuggestBaseTypeForParameter

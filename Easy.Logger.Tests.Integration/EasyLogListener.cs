@@ -5,10 +5,10 @@
     using System.Net;
     using System.Text;
     using System.Text.RegularExpressions;
-    using System.Threading;
-    using System.Threading.Tasks;
     using Easy.Logger.Tests.Integration.Models;
-    using Exception = System.Exception;
+    using System.Threading;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Serialization;
 
     internal sealed class EasyLogListener : IDisposable
     {
@@ -18,26 +18,46 @@
         private static readonly Regex JSONMediaTypeRegex =
             new Regex(@"([aA][pP][pP][lL][iI][cC][aA][tT][iI][oO][nN]/[jJ][sS][oO][nN]|[tT][eE][xX][tT]/[jJ][sS][oO][nN]|[aA][pP][pP][lL][iI][cC][aA][tT][iI][oO][nN]/[vV][nN][dD]\.\S*\+[jJ][sS][oO][nN])", RegexOptions.Compiled);
 
-        private readonly Func<Stream, LogPayload> _deserializer;
         private readonly HttpListener _listener;
+        private readonly JsonSerializer _serializer;
         private int _isDisposing;
 
+        /// <summary>
+        /// Invoked when a new <see cref="LogPayload"/> is <c>POST</c>ed.
+        /// </summary>
         public EventHandler<LogPayload> OnPayload;
+        
+        /// <summary>
+        /// Invoked when there is an error during the deserialization of <see cref="LogPayload"/>.
+        /// </summary>
         public EventHandler<Exception> OnError;
 
-        internal EasyLogListener(Uri prefix, Func<Stream, LogPayload> deserliazer)
+        /// <summary>
+        /// Creates an instance of <see cref="EasyLogListener"/>.
+        /// </summary>
+        /// <param name="prefix">The prefix the listener will be listening on.</param>
+        public EasyLogListener(Uri prefix)
         {
             _listener = new HttpListener();
             _listener.Prefixes.Add(prefix.AbsoluteUri);
-            _deserializer = deserliazer;
+
+            _serializer = new JsonSerializer
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                DateFormatHandling = DateFormatHandling.IsoDateFormat,
+                DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+                Formatting = Formatting.None
+            };
         }
 
-        internal Task ListenAsync()
-        {
-            ListenAsyncImpl();
-            return Task.FromResult(false);
-        }
+        /// <summary>
+        /// Starts listening for payloads.
+        /// </summary>
+        public void Start() => StartListening();
 
+        /// <summary>
+        /// Stops and releases resources used by the instance.
+        /// </summary>
         public void Dispose()
         {
             Interlocked.Increment(ref _isDisposing);
@@ -46,7 +66,7 @@
             _listener.Close();
         }
 
-        private async void ListenAsyncImpl()
+        private async void StartListening()
         {
             _listener.Start();
             while (_listener.IsListening)
@@ -55,15 +75,8 @@
 
                 try
                 {
-                    ctx = await _listener.GetContextAsync();
-                } catch (HttpListenerException e)
-                {
-                    // If we are NOT disposing, then we should report exception
-                    if (Interlocked.CompareExchange(ref _isDisposing, 0, 0) == 0)
-                    {
-                        OnError?.Invoke(this, e);
-                    }
-                }
+                    ctx = await _listener.GetContextAsync().ConfigureAwait(false);
+                } catch (HttpListenerException e) { HandleException(e); }
 
                 if (ctx == null) { return; }
 
@@ -74,12 +87,14 @@
                 {
                     try
                     {
-                        var payload = _deserializer(req.InputStream);
+                        var payload = Deserialize(req.InputStream);
                         OnPayload?.Invoke(this, payload);
-                        resp.StatusCode = (int)HttpStatusCode.Accepted;
-                    } catch (Exception e)
+                        resp.StatusCode = (int) HttpStatusCode.Accepted;
+                    } 
+                    catch (HttpListenerException) { continue; }
+                    catch (Exception e)
                     {
-                        OnError?.Invoke(this, e);
+                        HandleException(e);
                         resp.StatusCode = (int)HttpStatusCode.BadRequest;
                         resp.OutputStream.Write(InvalidPayloadMessage, 0, InvalidPayloadMessage.Length);
                     }
@@ -90,6 +105,24 @@
                 }
 
                 resp.Close();
+            }
+        }
+
+        private LogPayload Deserialize(Stream stream)
+        {
+            using (var sr = new StreamReader(stream, Encoding.UTF8, true, 1024, true))
+            using (var jsonTextReader = new JsonTextReader(sr) { CloseInput = false })
+            {
+                return _serializer.Deserialize<LogPayload>(jsonTextReader);
+            }
+        }
+
+        private void HandleException(Exception e)
+        {
+            // If we are NOT disposing, then we should report exception
+            if (Interlocked.CompareExchange(ref _isDisposing, 0, 0) == 0)
+            {
+                OnError?.Invoke(this, e);
             }
         }
 

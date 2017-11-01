@@ -6,14 +6,11 @@
     using System.IO;
     using System.Linq;
     using System.Net;
-    using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading;
     using System.Xml.Linq;
     using Easy.Logger.Interfaces;
     using Easy.Logger.Tests.Integration.Models;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Serialization;
     using NUnit.Framework;
     using Shouldly;
 
@@ -180,30 +177,11 @@
                 .Single()
                 .Attribute("value")?.Value;
 
-            _listener = new EasyLogListener(
-                new Uri(endpointStr ?? throw new InvalidOperationException()),
-                Deserializer);
+            _listener = new EasyLogListener(new Uri(endpointStr ?? throw new InvalidOperationException()));
 
             _listener.OnError += (sender, exception) => throw exception;
             _listener.OnPayload += (sender, payload) => _receivedPayloads.Enqueue(payload);
-            _listener.ListenAsync();
-
-            LogPayload Deserializer(Stream stream)
-            {
-                var serializer = new JsonSerializer
-                {
-                    ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                    DateFormatHandling = DateFormatHandling.IsoDateFormat,
-                    DateTimeZoneHandling = DateTimeZoneHandling.Utc,
-                    Formatting = Formatting.None
-                };
-
-                using (var sr = new StreamReader(stream, Encoding.UTF8))
-                using (var jsonTextReader = new JsonTextReader(sr))
-                {
-                    return serializer.Deserialize<LogPayload>(jsonTextReader);
-                }
-            }
+            _listener.Start();
         }
     }
 }
