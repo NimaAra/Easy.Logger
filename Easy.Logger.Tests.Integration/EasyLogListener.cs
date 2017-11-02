@@ -10,7 +10,10 @@
     using Newtonsoft.Json;
     using Newtonsoft.Json.Serialization;
 
-    internal sealed class EasyLogListener : IDisposable
+    /// <summary>
+    /// A simple <c>HTTP</c> listener for receiving <see cref="LogPayload"/>s.
+    /// </summary>
+    public sealed class EasyLogListener : IDisposable
     {
         private static readonly byte[] InvalidRequestMethodMessage = Encoding.UTF8.GetBytes("You can only POST a valid JSON payload to this server.");
         private static readonly byte[] InvalidPayloadMessage = Encoding.UTF8.GetBytes("Invalid payload. Payload should be a valid JSON.");
@@ -25,12 +28,12 @@
         /// <summary>
         /// Invoked when a new <see cref="LogPayload"/> is <c>POST</c>ed.
         /// </summary>
-        public EventHandler<LogPayload> OnPayload;
+        public event EventHandler<LogPayload> OnPayload;
         
         /// <summary>
         /// Invoked when there is an error during the deserialization of <see cref="LogPayload"/>.
         /// </summary>
-        public EventHandler<Exception> OnError;
+        public event EventHandler<Exception> OnError;
 
         /// <summary>
         /// Creates an instance of <see cref="EasyLogListener"/>.
