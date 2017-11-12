@@ -85,12 +85,12 @@
                 }
             }
 
-            lines[0].ShouldEndWith(" [DEBUG] [Worker#STA_NP] [Context] - Something is about to happen...");
-            lines[1].ShouldEndWith(" [INFO ] [Worker#STA_NP] [Context] - What's your number? It's: 1234");
-            lines[2].ShouldEndWith(" [ERROR] [Worker#STA_NP] [Context] - Ooops I did it again!");
+            lines[0].ShouldEndWith(" [DEBUG] [NonParallelWorker] [Context] - Something is about to happen...");
+            lines[1].ShouldEndWith(" [INFO ] [NonParallelWorker] [Context] - What's your number? It's: 1234");
+            lines[2].ShouldEndWith(" [ERROR] [NonParallelWorker] [Context] - Ooops I did it again!");
             lines[3].ShouldBe("System.ArgumentNullException: Value cannot be null.");
             lines[4].ShouldBe("Parameter name: cooCoo");
-            lines[5].ShouldEndWith(" [FATAL] [Worker#STA_NP] [Context] - Going home now - System.ApplicationException: CiaoCiao");
+            lines[5].ShouldEndWith(" [FATAL] [NonParallelWorker] [Context] - Going home now - System.ApplicationException: CiaoCiao");
         }
 
         private static void CheckReceivedPayloads(LogPayload[] payloads)
@@ -128,7 +128,7 @@
             allEntries[0].DateTimeOffset.ShouldBeOfType<DateTimeOffset>();
             allEntries[0].DateTimeOffset.ShouldNotBe(default(DateTimeOffset));
             allEntries[0].Level.ShouldBe("DEBUG");
-            allEntries[0].ThreadID.ShouldBe("Worker#STA_NP");
+            allEntries[0].ThreadID.ShouldBe("NonParallelWorker");
             allEntries[0].LoggerName.ShouldBe("Easy.Logger.Tests.Integration.Context");
             allEntries[0].Message.ShouldBe("Something is about to happen...");
             allEntries[0].Exception.ShouldBeNull();
@@ -136,7 +136,7 @@
             allEntries[1].DateTimeOffset.ShouldBeOfType<DateTimeOffset>();
             allEntries[1].DateTimeOffset.ShouldNotBe(default(DateTimeOffset));
             allEntries[1].Level.ShouldBe("INFO");
-            allEntries[1].ThreadID.ShouldBe("Worker#STA_NP");
+            allEntries[1].ThreadID.ShouldBe("NonParallelWorker");
             allEntries[1].LoggerName.ShouldBe("Easy.Logger.Tests.Integration.Context");
             allEntries[1].Message.ShouldBe("What's your number? It's: 1234");
             allEntries[1].Exception.ShouldBeNull();
@@ -144,7 +144,7 @@
             allEntries[2].DateTimeOffset.ShouldBeOfType<DateTimeOffset>();
             allEntries[2].DateTimeOffset.ShouldNotBe(default(DateTimeOffset));
             allEntries[2].Level.ShouldBe("ERROR");
-            allEntries[2].ThreadID.ShouldBe("Worker#STA_NP");
+            allEntries[2].ThreadID.ShouldBe("NonParallelWorker");
             allEntries[2].LoggerName.ShouldBe("Easy.Logger.Tests.Integration.Context");
             allEntries[2].Message.ShouldBe("Ooops I did it again!");
             allEntries[2].Exception.ShouldNotBeNull();
@@ -159,7 +159,7 @@
             allEntries[3].DateTimeOffset.ShouldBeOfType<DateTimeOffset>();
             allEntries[3].DateTimeOffset.ShouldNotBe(default(DateTimeOffset));
             allEntries[3].Level.ShouldBe("FATAL");
-            allEntries[3].ThreadID.ShouldBe("Worker#STA_NP");
+            allEntries[3].ThreadID.ShouldBe("NonParallelWorker");
             allEntries[3].LoggerName.ShouldBe("Easy.Logger.Tests.Integration.Context");
             allEntries[3].Message.ShouldBe("Going home now - System.ApplicationException: CiaoCiao");
             allEntries[3].Exception.ShouldBeNull();
