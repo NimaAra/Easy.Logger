@@ -55,7 +55,6 @@
             {
                 Serializer.Serialize(writer, _payload);
             }
-
             return CompletedTask;
         }
 

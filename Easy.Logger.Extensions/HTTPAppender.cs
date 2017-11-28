@@ -119,10 +119,9 @@
                     // Try once more
                     await DoPost(payload).ConfigureAwait(false);
                 }
-            } finally
-            {
-                _waitHandle.Set();
-            }
+            } 
+            catch(Exception e) when(e is HttpRequestException || e is TaskCanceledException) { /* ignore */}
+            finally { _waitHandle.Set(); }
         }
 
         private async Task<bool> DoPost(object payload)
