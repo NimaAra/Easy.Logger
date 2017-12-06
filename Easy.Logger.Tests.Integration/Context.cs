@@ -105,7 +105,7 @@
             
             payloads.Length.ShouldBe(2);
 
-            payloads[0].BatchCount.ShouldBe(1);
+            payloads[0].BatchNo.ShouldBe(1);
             payloads[0].PID.ShouldBe(pid);
             payloads[0].ProcessName.ShouldBe(processName);
             payloads[0].Host.ShouldBe(Dns.GetHostName());
@@ -114,7 +114,7 @@
             payloads[0].Sender.ShouldBe("Integration.Tests");
             payloads[0].Entries.Length.ShouldBe(1);
 
-            payloads[1].BatchCount.ShouldBe(2);
+            payloads[1].BatchNo.ShouldBe(2);
             payloads[1].PID.ShouldBe(pid);
             payloads[1].ProcessName.ShouldBe(processName);
             payloads[1].Host.ShouldBe(Dns.GetHostName());

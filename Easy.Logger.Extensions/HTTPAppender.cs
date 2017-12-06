@@ -2,40 +2,53 @@
 {
     using System;
     using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
+    using System.IO;
     using System.Net;
-    using System.Net.Http;
+    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using log4net.Appender;
     using log4net.Core;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Serialization;
 
     /// <summary>
     /// An appender for <c>POSTing</c> log events to a given endpoint.
     /// </summary>
     public sealed class HTTPAppender : AppenderSkeleton
     {
-        private readonly ManualResetEventSlim _waitHandle;
-        private readonly HttpClient _client;
+        private static readonly JsonSerializer Serializer;
         private readonly ThreadLocal<LoggingEvent[]> _singleLogEventPool;
-        private readonly string _pid;
-        private readonly string _pName;
-
+        private readonly string _pid, _processName;
+        
         private int _counter;
-        private string _host;
+        private string _host, _sender;
+
+        static HTTPAppender()
+        {
+            Serializer = new JsonSerializer
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                DateFormatHandling = DateFormatHandling.IsoDateFormat,
+                DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+                Formatting = Formatting.None
+            };
+
+            PrettifyJSON();
+        }
 
         /// <summary>
         /// Creates an instance of the <see cref="HTTPAppender"/>.
         /// </summary>
         public HTTPAppender()
         {
-            _waitHandle = new ManualResetEventSlim();
-            _client = new HttpClient();
             _singleLogEventPool = new ThreadLocal<LoggingEvent[]>(() => new LoggingEvent[1]);
 
             using (var p = Process.GetCurrentProcess())
             {
                 _pid = p.Id.ToString();
-                _pName = p.ProcessName;
+                _processName = p.ProcessName;
             }
         }
 
@@ -68,6 +81,7 @@
             }
 
             _host = IncludeHost ? Dns.GetHostName() : null;
+            _sender = Name;
         }
 
         /// <summary>
@@ -85,65 +99,71 @@
         /// </summary>
         protected override void Append(LoggingEvent[] logEvents) => Post(logEvents);
 
-        /// <summary>
-        /// Ensures that all pending logging events are flushed out before exiting.
-        /// </summary>
-        protected override void OnClose()
-        {
-            _waitHandle.Wait(TimeSpan.FromSeconds(1));
-            _waitHandle.Dispose();
-            _client.Dispose();
-
-            base.OnClose();
-        }
-
         private async void Post(LoggingEvent[] logEvents)
         {
-            var payload = new
+            var payload = new Payload
             {
                 PID = _pid,
-                ProcessName = _pName,
+                ProcessName = _processName,
                 Host = _host,
-                Sender = Name,
+                Sender = _sender,
                 TimestampUTC = DateTimeOffset.UtcNow,
-                BatchCount = Interlocked.Increment(ref _counter),
+                BatchNo = Interlocked.Increment(ref _counter),
                 Entries = GetEntries(logEvents)
             };
-            
-            _waitHandle.Reset();
 
-            try
+            if (!await DoPost(payload).ConfigureAwait(false))
             {
-                if (!await DoPost(payload).ConfigureAwait(false))
-                {
-                    // Try once more
-                    await DoPost(payload).ConfigureAwait(false);
-                }
-            } 
-            catch(Exception e) when(e is HttpRequestException || e is TaskCanceledException) { /* ignore */}
-            finally { _waitHandle.Set(); }
-        }
-
-        private async Task<bool> DoPost(object payload)
-        {
-            using (var content = new JSONPushStreamContent(payload))
-            {
-                var response = await _client.PostAsync(Endpoint, content).ConfigureAwait(false);
-                return response.IsSuccessStatusCode;
+                // Try once more
+                await DoPost(payload).ConfigureAwait(false);
             }
         }
 
-        // ReSharper disable once SuggestBaseTypeForParameter
-        private static object[] GetEntries(LoggingEvent[] logEvents)
+        private async Task<bool> DoPost(Payload payload)
         {
-            var result = new object[logEvents.Length];
+            var req = (HttpWebRequest)WebRequest.Create(Endpoint);
+
+            /* ToDo - Consider setting the proxy
+             * string proxyUrl = "proxy.myproxy.com";
+             * int proxyPort = 8080;
+             * WebProxy myProxy = new WebProxy(proxyUrl, proxyPort);
+             *
+             * HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(Endpoint);
+             * req.Proxy = myProxy;
+             */
+            req.Proxy = null;
+            req.Method = "POST";
+            req.ContentType = "application/json";
+
+            try
+            {
+                using (Stream stream = await req.GetRequestStreamAsync().ConfigureAwait(false))
+                using (TextWriter writer = new StreamWriter(stream, Encoding.UTF8, 1024, true))
+                using (JsonTextWriter jsonWriter = new JsonTextWriter(writer))
+                {
+                    Serializer.Serialize(jsonWriter, payload);
+                }
+
+                using (var resp = (HttpWebResponse) await req.GetResponseAsync().ConfigureAwait(false))
+                {
+                    return IsSuccessStatusCode(resp);
+                }
+            } catch (WebException)
+            {
+                return false;
+            }
+        }
+
+        private static Entry[] GetEntries(LoggingEvent[] logEvents)
+        {
+            var result = new Entry[logEvents.Length];
             for (var i = 0; i < logEvents.Length; i++)
             {
                 var curr = logEvents[i];
-                result[i] = new
+                result[i] = new Entry
                 {
                     DateTimeOffset = new DateTimeOffset(curr.TimeStamp),
-                    curr.LoggerName,
+                    LoggerName = curr.LoggerName,
                     Level = curr.Level?.DisplayName,
                     ThreadID = curr.ThreadName,
                     Message = curr.RenderedMessage,
@@ -151,6 +171,43 @@
                 };
             }
             return result;
+        }
+
+        private static bool IsSuccessStatusCode(HttpWebResponse response)
+        {
+            if (response.StatusCode >= HttpStatusCode.OK)
+            {
+                return response.StatusCode <= (HttpStatusCode)299;
+            }
+            return false;
+        }
+
+        [Conditional("DEBUG")]
+        private static void PrettifyJSON() => Serializer.Formatting = Formatting.Indented;
+
+        [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]
+        private sealed class Payload
+        {
+            // ReSharper disable once InconsistentNaming
+            public string PID { get; set; }
+            public string ProcessName { get; set; }
+            public string Host { get; set; }
+            public string Sender { get; set; }
+            public DateTimeOffset TimestampUTC { get; set; }
+            public int BatchNo { get; set; }
+            public Entry[] Entries { get; set; }
+        }
+
+        [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]
+        private struct Entry
+        {
+            public DateTimeOffset DateTimeOffset { get; set; }
+            public string LoggerName { get; set; }
+            public string Level { get; set; }
+            // ReSharper disable once InconsistentNaming
+            public string ThreadID { get; set; }
+            public string Message { get; set; }
+            public Exception Exception { get; set; }
         }
     }
 }

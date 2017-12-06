@@ -15,6 +15,10 @@
     /// </summary>
     public sealed class EasyLogListener : IDisposable
     {
+        private const int StatusCodeAccepted = 202;
+        private const int StatusCodeBadRequest = 400;
+        private const int StatusCodeNotAcceptable = 406;
+
         private static readonly byte[] InvalidRequestMethodMessage = Encoding.UTF8.GetBytes("You can only POST a valid JSON payload to this server.");
         private static readonly byte[] InvalidPayloadMessage = Encoding.UTF8.GetBytes("Invalid payload. Payload should be a valid JSON.");
 
@@ -49,7 +53,7 @@
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
                 DateFormatHandling = DateFormatHandling.IsoDateFormat,
                 DateTimeZoneHandling = DateTimeZoneHandling.Utc,
-                Formatting = Formatting.None
+                Formatting = Newtonsoft.Json.Formatting.None
             };
         }
 
@@ -79,7 +83,9 @@
                 try
                 {
                     ctx = await _listener.GetContextAsync().ConfigureAwait(false);
-                } catch (HttpListenerException e) { HandleException(e); }
+                } 
+                catch (HttpListenerException e) { HandleException(e); }
+                catch (ObjectDisposedException) { /* Shutting down */ }
 
                 if (ctx == null) { return; }
 
@@ -92,22 +98,24 @@
                     {
                         var payload = Deserialize(req.InputStream);
                         OnPayload?.Invoke(this, payload);
-                        resp.StatusCode = (int) HttpStatusCode.Accepted;
+                        resp.StatusCode = StatusCodeAccepted;
                     } 
                     catch (HttpListenerException) { continue; }
                     catch (Exception e)
                     {
                         HandleException(e);
-                        resp.StatusCode = (int)HttpStatusCode.BadRequest;
-                        resp.OutputStream.Write(InvalidPayloadMessage, 0, InvalidPayloadMessage.Length);
+                        resp.StatusCode = StatusCodeBadRequest;
+                        await resp.OutputStream.WriteAsync(
+                            InvalidPayloadMessage, 0, InvalidPayloadMessage.Length);
                     }
                 } else
                 {
-                    resp.StatusCode = (int)HttpStatusCode.NotAcceptable;
-                    resp.OutputStream.Write(InvalidRequestMethodMessage, 0, InvalidRequestMethodMessage.Length);
+                    resp.StatusCode = StatusCodeNotAcceptable;
+                    await resp.OutputStream.WriteAsync(
+                        InvalidRequestMethodMessage, 0, InvalidRequestMethodMessage.Length);
                 }
 
-                resp.Close();
+                resp.OutputStream.Close();
             }
         }
 

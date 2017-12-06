@@ -47,6 +47,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Easy.Logger.Extensions\Easy.Logger.Extensions.csproj">
+      <Project>{84135fc0-fe53-47ac-ab47-fc5b0cdb2ecd}</Project>
+      <Name>Easy.Logger.Extensions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Easy.Logger.Interfaces\Easy.Logger.Interfaces.csproj">
       <Project>{80248AFD-52ED-47A0-B077-97AE8DC067CF}</Project>
       <Name>Easy.Logger.Interfaces</Name>

@@ -24,7 +24,9 @@
 
             new Program(duration).Run();
 
+            Console.WriteLine("[{0:HH:mm:ss.fff}] - [Program] - Disposing", DateTimeOffset.UtcNow);
             Log4NetService.Instance.Dispose();
+            Console.WriteLine("[{0:HH:mm:ss.fff}] - [Program] - Disposed", DateTimeOffset.UtcNow);
         }
 
         public Program(TimeSpan duration)

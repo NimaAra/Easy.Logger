@@ -192,7 +192,7 @@ The following payload will then be received at the endpoint:
   "host": "TestServer-01",
   "sender": "SampleApp",
   "timestampUTC": "2017-09-17T16:27:14.9377168+00:00",
-  "batchCount": 1,
+  "batchNo": 1,
   "entries": [
     {
       "dateTimeOffset": "2017-09-17T17:27:14.4107128+01:00",
