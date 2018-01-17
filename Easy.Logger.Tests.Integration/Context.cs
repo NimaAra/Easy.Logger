@@ -149,12 +149,12 @@
             allEntries[2].Message.ShouldBe("Ooops I did it again!");
             allEntries[2].Exception.ShouldNotBeNull();
             
-            allEntries[2].Exception.Data.ShouldNotBeNull();
-            allEntries[2].Exception.HResult.ShouldBe(-2147467261);
-            allEntries[2].Exception.InnerException.ShouldBeNull();
-            allEntries[2].Exception.Message.ShouldBe("Value cannot be null.");
-            allEntries[2].Exception.Source.ShouldBeNull();
-            allEntries[2].Exception.StackTrace.ShouldBeNull();
+            allEntries[2].Exception["Data"].ShouldBeNull();
+            allEntries[2].Exception["HResult"].ShouldBe(-2147467261);
+            allEntries[2].Exception["InnerException"].ShouldBeNull();
+            allEntries[2].Exception["Message"].ShouldBe("Value cannot be null.");
+            allEntries[2].Exception["Source"].ShouldBeNull();
+            allEntries[2].Exception.ShouldNotContainKey("StackTrace");
 
             allEntries[3].DateTimeOffset.ShouldBeOfType<DateTimeOffset>();
             allEntries[3].DateTimeOffset.ShouldNotBe(default(DateTimeOffset));

@@ -20,7 +20,8 @@
     {
         private static readonly JsonSerializer Serializer;
         private readonly ThreadLocal<LoggingEvent[]> _singleLogEventPool;
-        private readonly string _pid, _processName;
+        private readonly int _pid;
+        private readonly string _processName;
         
         private int _counter;
         private string _host, _sender;
@@ -47,7 +48,7 @@
 
             using (var p = Process.GetCurrentProcess())
             {
-                _pid = p.Id.ToString();
+                _pid = p.Id;
                 _processName = p.ProcessName;
             }
         }
@@ -189,7 +190,7 @@
         private sealed class Payload
         {
             // ReSharper disable once InconsistentNaming
-            public string PID { get; set; }
+            public int PID { get; set; }
             public string ProcessName { get; set; }
             public string Host { get; set; }
             public string Sender { get; set; }

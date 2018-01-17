@@ -2,6 +2,7 @@
 namespace Easy.Logger.Tests.Integration.Models
 {
     using System;
+    using System.Collections.Generic;
     using System.Text;
 
     /// <summary>
@@ -113,6 +114,6 @@ namespace Easy.Logger.Tests.Integration.Models
         /// <summary>
         /// Gets or sets the exception if any.
         /// </summary>
-        public Exception Exception { get; set; }
+        public Dictionary<string, object> Exception { get; set; }
     }
 }
