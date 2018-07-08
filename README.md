@@ -52,24 +52,22 @@ The above logging results in the the following log entries (based on the [sample
 ```
 
 ### Scoped logging:
-Sometimes you need to log the entry and exit points of an operation so instead of having to log that manually we can use the scoping feature of the library:
+Sometimes you need to add context to your log entries for example when adding a _Correlation ID_ to identify a request. Instead of having to do this manually, we can leverage the scoping feature of the library:
 
 ```csharp
-const string ScopeName = "SomeScope";
-using (logger.GetScopedLogger(ScopeName, EasyLogLevel.Debug))
+const string REQUEST_ID = "M1351";
+using (logger.GetScopedLogger($"[{REQUEST_ID}]"))
 {
-    logger.InfoFormat("[{0}] - Foo is awesome.", ScopeName);
-    logger.DebugFormat("[{0}] - Bar is even more awesome!", ScopeName);
+    logger.Info("Foo is awesome.");
+    logger.Debug("Bar is even more awesome!");
 }
 ```
 which produces the following log entries:
 ```
-[2017-09-17 17:39:16,569] [DEBUG] [ 1] [Program] - [/ SomeScope \]
-[2017-09-17 17:39:16,573] [INFO ] [ 1] [Program] - [SomeScope] - Foo is awesome.
-[2017-09-17 17:39:16,575] [DEBUG] [ 1] [Program] - [SomeScope] - Bar is even more awesome!
-[2017-09-17 17:39:16,575] [DEBUG] [ 1] [Program] - [\ SomeScope /]
+[2017-09-17 17:39:16,573] [INFO ] [ 1] [Program] - [M1351] Foo is awesome.
+[2017-09-17 17:39:16,575] [DEBUG] [ 1] [Program] - [M1351] Bar is even more awesome!
 ```
-\* The `ScopedLogger` is a `struct` and has been designed with performance in mind therefore frequent logging using this method does not put pressure on the GC or the CPU.
+The scoping feature has been implemented with performance in mind and is encouraged to be used instead of the [_log4net_'s _Nested Diagnostic Context (NDC)_](https://logging.apache.org/log4net/log4net-1.2.11/release/sdk/log4net.NDC.html). _NDC_ requires `Fixing` the _Properties_ which results in a significantly lower performance.
 
 ### Dependency Injection:
 
@@ -136,7 +134,7 @@ The [_Easy.Logger.Extensions_*](https://github.com/NimaAra/Easy.Logger/tree/mast
     <bufferSize value="512" />
     
     <idleTime value="500" />
-    <fix value="268" />
+    <fix value="Message, ThreadName, Exception" />
   
     <appender-ref ref="RollingFile"/>
     <appender-ref ref="HTTPAppender"/>

@@ -43,7 +43,8 @@
             assembly = GetType().Assembly;
 #endif
             _repository = LogManager.GetRepository(assembly);
-            
+            log4net.Util.SystemInfo.NullText = string.Empty;
+
             var defaultConfigFile = new FileInfo(Path.Combine(log4NetConfigDir, "log4net.config"));
             if (!defaultConfigFile.Exists) { return; }
             

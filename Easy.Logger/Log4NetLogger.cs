@@ -3,6 +3,7 @@
     using System;
     using System.Diagnostics;
     using System.Globalization;
+    using System.Text;
     using Easy.Logger.Interfaces;
     using log4net;
     using log4net.Core;
@@ -14,7 +15,6 @@
     internal sealed class Log4NetLogger : IEasyLogger
     {
 		private static readonly Type ThisDeclaringType = typeof(Log4NetLogger);
-        private static readonly Level TraceLevel = Level.Trace;
         private readonly ILog _logger;
 
         [DebuggerStepThrough]
@@ -26,49 +26,62 @@
         public string Name => _logger.Logger.Name;
 
         /// <summary>
-        /// Gets the flag indicating whether the logger is enabled for 
-        /// <see cref="EasyLogLevel.Trace"/> messages.
+        /// Returns an <see cref="IDisposable"/> which allows the caller to specify a scope as
+        /// <paramref name="name"/> which will then be rendered as part of the message.
         /// </summary>
-        public bool IsTraceEnabled => _logger.Logger.IsEnabledFor(TraceLevel);
+        /// <param name="name">The name of the scope</param>
+        public IDisposable GetScopedLogger(string name) => new Scope(name);
+
+    #region Levels Enabled
 
         /// <summary>
         /// Gets the flag indicating whether the logger is enabled for 
-        /// <see cref="EasyLogLevel.Debug"/> messages.
+        /// <c>Trace</c> messages.
+        /// </summary>
+        public bool IsTraceEnabled => IsEnabledFor(Level.Trace);
+
+        /// <summary>
+        /// Gets the flag indicating whether the logger is enabled for 
+        /// <c>Debug</c> messages.
         /// </summary>
         public bool IsDebugEnabled => _logger.IsDebugEnabled;
 
         /// <summary>
         /// Gets the flag indicating whether the logger is enabled for 
-        /// <see cref="EasyLogLevel.Info"/> messages.
+        /// <c>Info</c> messages.
         /// </summary>
         public bool IsInfoEnabled => _logger.IsInfoEnabled;
 
         /// <summary>
         /// Gets the flag indicating whether the logger is enabled for 
-        /// <see cref="EasyLogLevel.Warn"/> messages.
+        /// <c>Warn</c> messages.
         /// </summary>
         public bool IsWarnEnabled => _logger.IsWarnEnabled;
 
         /// <summary>
         /// Gets the flag indicating whether the logger is enabled for 
-        /// <see cref="EasyLogLevel.Error"/> messages.
+        /// <c>Error</c> messages.
         /// </summary>
         public bool IsErrorEnabled => _logger.IsErrorEnabled;
 
         /// <summary>
         /// Gets the flag indicating whether the logger is enabled for 
-        /// <see cref="EasyLogLevel.Fatal"/> messages.
+        /// <c>Fatal</c> messages.
         /// </summary>
         public bool IsFatalEnabled => _logger.IsFatalEnabled;
 
+    #endregion
+
+    #region Trace
+        
         /// <summary>
-        /// Logs a message object with the <see cref="EasyLogLevel.Trace"/> level.
+        /// Logs a message object with the <c>Trace</c> level.
         /// </summary>
         /// <param name="message">The message object to be logged.</param>
         /// <remarks>
         /// <para>
         /// This method first checks if this logger is <c>Debug</c> enabled by comparing the level of 
-        /// this logger with the <see cref="EasyLogLevel.Trace"/> level. If this logger is <c>Debug</c> 
+        /// this logger with the <c>Trace</c> level. If this logger is <c>Debug</c> 
         /// enabled, then it converts the message object (passed as parameter) to a string by invoking the appropriate
         /// <see cref="T:log4net.ObjectRenderer.IObjectRenderer"/>. It then proceeds to call all the registered appenders 
         /// in this logger  and also higher in the hierarchy depending on the value of the additivity flag.
@@ -80,20 +93,19 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void Trace(object message) => _logger.Logger.Log(ThisDeclaringType, TraceLevel, message, null);
+        public void Trace(object message) => LogImpl(Level.Trace, message, null);
 
         /// <summary>
-        /// Logs a message object with the <see cref="EasyLogLevel.Trace"/> level including 
+        /// Logs a message object with the <c>Trace</c> level including 
         /// the stack trace of the <see cref="T:System.Exception"/> passed as a parameter.
         /// </summary>
         /// <param name="message">The message object to be logged.</param>
         /// <param name="exception">The exception to be logged, including its stack trace.</param>
         [DebuggerStepThrough]
-        public void Trace(object message, Exception exception) => 
-            _logger.Logger.Log(ThisDeclaringType, TraceLevel, message, exception);
+        public void Trace(object message, Exception exception) => LogImpl(Level.Trace, message, exception);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Trace"/> level.
+        /// Logs a formatted message string with the <c>Trace</c> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg">The object to format</param>
@@ -109,13 +121,11 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void TraceFormat(string format, object arg) => 
-            _logger.Logger.Log(
-                ThisDeclaringType, TraceLevel, 
-                new SystemStringFormat(CultureInfo.InvariantCulture, format, arg), null);
+        public void TraceFormat(string format, object arg) 
+            => LogImpl(Level.Trace, new SystemStringFormat(CultureInfo.InvariantCulture, format, arg), null);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Trace"/> level.
+        /// Logs a formatted message string with the <c>Trace</c> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg1">The first object to format</param>
@@ -127,14 +137,14 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void TraceFormat(string format, object arg1, object arg2) => 
-            _logger.Logger.Log(
-                ThisDeclaringType, 
-                TraceLevel, 
-                new SystemStringFormat(CultureInfo.InvariantCulture, format, arg1, arg2), null);
+        public void TraceFormat(string format, object arg1, object arg2) 
+            => LogImpl(
+                Level.Trace, 
+                new SystemStringFormat(CultureInfo.InvariantCulture, format, arg1, arg2), 
+                null);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Trace"/> level.
+        /// Logs a formatted message string with the <c>Trace</c> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg1">The first object to format</param>
@@ -147,14 +157,14 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void TraceFormat(string format, object arg1, object arg2, object arg3) => 
-            _logger.Logger.Log(
-                ThisDeclaringType, 
-                TraceLevel, 
-                new SystemStringFormat(CultureInfo.InvariantCulture, format, arg1, arg2, arg3), null);
+        public void TraceFormat(string format, object arg1, object arg2, object arg3) 
+            => LogImpl(
+                Level.Trace, 
+                new SystemStringFormat(CultureInfo.InvariantCulture, format, arg1, arg2, arg3),
+                null);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Trace"/> level.
+        /// Logs a formatted message string with the <c>Trace</c> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="args">An Object array containing zero or more objects to format</param>
@@ -169,14 +179,14 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void TraceFormat(string format, params object[] args) => 
-            _logger.Logger.Log(
-                ThisDeclaringType, 
-                TraceLevel, 
-                new SystemStringFormat(CultureInfo.InvariantCulture, format, args), null);
+        public void TraceFormat(string format, params object[] args)
+            => LogImpl(
+                Level.Trace, 
+                new SystemStringFormat(CultureInfo.InvariantCulture, format, args),
+                null);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Trace"/> level.
+        /// Logs a formatted message string with the <c>Trace</c> level.
         /// </summary>
         /// <param name="provider">An <see cref= "T:System.IFormatProvider" /> that supplies culture-specific formatting information</param>
         /// <param name="format">A String containing zero or more format items</param>
@@ -192,20 +202,23 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void TraceFormat(IFormatProvider provider, string format, params object[] args) => 
-            _logger.Logger.Log(
-                ThisDeclaringType, 
-                TraceLevel, 
-                new SystemStringFormat(provider, format, args), null);
+        public void TraceFormat(IFormatProvider provider, string format, params object[] args) 
+            => LogImpl(
+                Level.Trace, 
+                new SystemStringFormat(provider, format, args),
+                null);
+#endregion
+
+    #region Debug
 
         /// <summary>
-        /// Logs a message object with the <see cref="EasyLogLevel.Debug"/> level.
+        /// Logs a message object with the <c>Debug</c> level.
         /// </summary>
         /// <param name="message">The message object to be logged.</param>
         /// <remarks>
         /// <para>
         /// This method first checks if this logger is <c>Debug</c> enabled by comparing the level of 
-        /// this logger with the <see cref="EasyLogLevel.Debug"/> level. If this logger is <c>Debug</c> 
+        /// this logger with the <c>Debug</c> level. If this logger is <c>Debug</c> 
         /// enabled, then it converts the message object (passed as parameter) to a string by invoking the appropriate
         /// <see cref="T:log4net.ObjectRenderer.IObjectRenderer"/>. It then proceeds to call all the registered appenders 
         /// in this logger  and also higher in the hierarchy depending on the value of the additivity flag.
@@ -217,19 +230,19 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void Debug(object message) => _logger.Debug(message);
+        public void Debug(object message) => LogImpl(Level.Debug, message, null);
 
         /// <summary>
-        /// Logs a message object with the <see cref="EasyLogLevel.Debug"/> level including 
+        /// Logs a message object with the <c>Debug</c> level including 
         /// the stack trace of the <see cref="T:System.Exception"/> passed as a parameter.
         /// </summary>
         /// <param name="message">The message object to be logged.</param>
         /// <param name="exception">The exception to be logged, including its stack trace.</param>
         [DebuggerStepThrough]
-        public void Debug(object message, Exception exception) => _logger.Debug(message, exception);
+        public void Debug(object message, Exception exception) => LogImpl(Level.Debug, message, exception);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Debug"/> level.
+        /// Logs a formatted message string with the <c>Debug</c> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg">The object to format</param>
@@ -245,10 +258,11 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void DebugFormat(string format, object arg) => _logger.DebugFormat(format, arg);
+        public void DebugFormat(string format, object arg) 
+            => LogImpl(Level.Debug, new SystemStringFormat(CultureInfo.InvariantCulture, format, arg), null);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Debug"/> level.
+        /// Logs a formatted message string with the <c>Debug</c> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg1">The first object to format</param>
@@ -260,11 +274,14 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void DebugFormat(string format, object arg1, object arg2) => 
-            _logger.DebugFormat(format, arg1, arg2);
+        public void DebugFormat(string format, object arg1, object arg2) 
+            => LogImpl(
+                Level.Debug, 
+                new SystemStringFormat(CultureInfo.InvariantCulture, format, arg1, arg2), 
+                null);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Debug"/> level.
+        /// Logs a formatted message string with the <c>Debug</c> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg1">The first object to format</param>
@@ -277,11 +294,14 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void DebugFormat(string format, object arg1, object arg2, object arg3) => 
-            _logger.DebugFormat(format, arg1, arg2, arg3);
+        public void DebugFormat(string format, object arg1, object arg2, object arg3) 
+            => LogImpl(
+                Level.Debug, 
+                new SystemStringFormat(CultureInfo.InvariantCulture, format, arg1, arg2, arg3),
+                null);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Debug"/> level.
+        /// Logs a formatted message string with the <c>Debug</c> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="args">An Object array containing zero or more objects to format</param>
@@ -296,10 +316,14 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void DebugFormat(string format, params object[] args) => _logger.DebugFormat(format, args);
+        public void DebugFormat(string format, params object[] args) 
+            => LogImpl(
+                Level.Debug, 
+                new SystemStringFormat(CultureInfo.InvariantCulture, format, args),
+                null);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Debug"/> level.
+        /// Logs a formatted message string with the <c>Debug</c> level.
         /// </summary>
         /// <param name="provider">An <see cref= "T:System.IFormatProvider" /> that supplies culture-specific formatting information</param>
         /// <param name="format">A String containing zero or more format items</param>
@@ -315,17 +339,24 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void DebugFormat(IFormatProvider provider, string format, params object[] args) => 
-            _logger.DebugFormat(provider, format, args);
+        public void DebugFormat(IFormatProvider provider, string format, params object[] args) 
+            => LogImpl(
+                Level.Debug, 
+                new SystemStringFormat(provider, format, args),
+                null);
 
+    #endregion
+
+    #region Info
+            
         /// <summary>
-        /// Logs a message object with the <see cref="EasyLogLevel.Info"/> level.
+        /// Logs a message object with the <c>Info</c> level.
         /// </summary>
         /// <param name="message">The message object to be logged.</param>
         /// <remarks>
         /// <para>
         /// This method first checks if this logger is <c>Info</c> enabled by comparing the level of 
-        /// this logger with the <see cref="EasyLogLevel.Info"/> level. If this logger is <c>Info</c> 
+        /// this logger with the <c>Info</c> level. If this logger is <c>Info</c> 
         /// enabled, then it converts the message object (passed as parameter) to a string by invoking the appropriate
         /// <see cref="T:log4net.ObjectRenderer.IObjectRenderer"/>. It then proceeds to call all the registered appenders 
         /// in this logger  and also higher in the hierarchy depending on the value of the additivity flag.
@@ -337,19 +368,19 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void Info(object message) => _logger.Info(message);
+        public void Info(object message) => LogImpl(Level.Info, message, null);
 
         /// <summary>
-        /// Logs a message object with the <see cref="EasyLogLevel.Info"/> level including 
+        /// Logs a message object with the <c>Info</c> level including 
         /// the stack trace of the <see cref="T:System.Exception"/> passed as a parameter.
         /// </summary>
         /// <param name="message">The message object to be logged.</param>
         /// <param name="exception">The exception to be logged, including its stack trace.</param>
         [DebuggerStepThrough]
-        public void Info(object message, Exception exception) => _logger.Info(message, exception);
+        public void Info(object message, Exception exception) => LogImpl(Level.Info, message, exception);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Info"/> level.
+        /// Logs a formatted message string with the <c>Info</c> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg">The object to format</param>
@@ -365,10 +396,11 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void InfoFormat(string format, object arg) => _logger.InfoFormat(format, arg);
+        public void InfoFormat(string format, object arg) 
+            => LogImpl(Level.Info, new SystemStringFormat(CultureInfo.InvariantCulture, format, arg), null);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Info"/> level.
+        /// Logs a formatted message string with the <c>Info</c> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg1">The first object to format</param>
@@ -380,11 +412,14 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void InfoFormat(string format, object arg1, object arg2) => 
-            _logger.InfoFormat(format, arg1, arg2);
+        public void InfoFormat(string format, object arg1, object arg2) 
+            => LogImpl(
+                Level.Info, 
+                new SystemStringFormat(CultureInfo.InvariantCulture, format, arg1, arg2), 
+                null);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Info"/> level.
+        /// Logs a formatted message string with the <c>Info</c> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg1">The first object to format</param>
@@ -397,11 +432,14 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void InfoFormat(string format, object arg1, object arg2, object arg3) => 
-            _logger.InfoFormat(format, arg1, arg2, arg3);
+        public void InfoFormat(string format, object arg1, object arg2, object arg3) 
+            => LogImpl(
+                Level.Info, 
+                new SystemStringFormat(CultureInfo.InvariantCulture, format, arg1, arg2, arg3),
+                null);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Info"/> level.
+        /// Logs a formatted message string with the <c>Info</c> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="args">An Object array containing zero or more objects to format</param>
@@ -416,10 +454,14 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void InfoFormat(string format, params object[] args) => _logger.InfoFormat(format, args);
+        public void InfoFormat(string format, params object[] args) 
+            => LogImpl(
+                Level.Info, 
+                new SystemStringFormat(CultureInfo.InvariantCulture, format, args),
+                null);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Info"/> level.
+        /// Logs a formatted message string with the <c>Info</c> level.
         /// </summary>
         /// <param name="provider">An <see cref= "T:System.IFormatProvider" /> that supplies culture-specific formatting information</param>
         /// <param name="format">A String containing zero or more format items</param>
@@ -435,17 +477,24 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void InfoFormat(IFormatProvider provider, string format, params object[] args) => 
-            _logger.InfoFormat(provider, format, args);
+        public void InfoFormat(IFormatProvider provider, string format, params object[] args) 
+            => LogImpl(
+                Level.Info, 
+                new SystemStringFormat(provider, format, args),
+                null);
 
+    #endregion
+
+    #region Warn
+            
         /// <summary>
-        /// Logs a message object with the <see cref="EasyLogLevel.Warn"/> level.
+        /// Logs a message object with the <c>Warn</c> level.
         /// </summary>
         /// <param name="message">The message object to be logged.</param>
         /// <remarks>
         /// <para>
         /// This method first checks if this logger is <c>Warn</c> enabled by comparing the level of 
-        /// this logger with the <see cref="EasyLogLevel.Warn"/> level. If this logger is <c>Warn</c> 
+        /// this logger with the <c>Warn</c> level. If this logger is <c>Warn</c> 
         /// enabled, then it converts the message object (passed as parameter) to a string by invoking the appropriate
         /// <see cref="T:log4net.ObjectRenderer.IObjectRenderer"/>. It then proceeds to call all the registered appenders 
         /// in this logger  and also higher in the hierarchy depending on the value of the additivity flag.
@@ -457,19 +506,19 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void Warn(object message) => _logger.Warn(message);
+        public void Warn(object message) => LogImpl(Level.Warn, message, null);
 
         /// <summary>
-        /// Logs a message object with the <see cref="EasyLogLevel.Warn"/> level including 
+        /// Logs a message object with the <c>Warn</c> level including 
         /// the stack trace of the <see cref="T:System.Exception"/> passed as a parameter.
         /// </summary>
         /// <param name="message">The message object to be logged.</param>
         /// <param name="exception">The exception to be logged, including its stack trace.</param>
         [DebuggerStepThrough]
-        public void Warn(object message, Exception exception) => _logger.Warn(message, exception);
+        public void Warn(object message, Exception exception) => LogImpl(Level.Warn, message, exception);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Warn"/> level.
+        /// Logs a formatted message string with the <c>Warn</c> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg">The object to format</param>
@@ -485,10 +534,11 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void WarnFormat(string format, object arg) => _logger.WarnFormat(format, arg);
+        public void WarnFormat(string format, object arg) 
+            => LogImpl(Level.Warn, new SystemStringFormat(CultureInfo.InvariantCulture, format, arg), null);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Warn"/> level.
+        /// Logs a formatted message string with the <c>Warn</c> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg1">The first object to format</param>
@@ -500,11 +550,14 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void WarnFormat(string format, object arg1, object arg2) => 
-            _logger.WarnFormat(format, arg1, arg2);
+        public void WarnFormat(string format, object arg1, object arg2) 
+            => LogImpl(
+                Level.Warn, 
+                new SystemStringFormat(CultureInfo.InvariantCulture, format, arg1, arg2), 
+                null);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Warn"/> level.
+        /// Logs a formatted message string with the <c>Warn</c> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg1">The first object to format</param>
@@ -517,11 +570,14 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void WarnFormat(string format, object arg1, object arg2, object arg3) => 
-            _logger.WarnFormat(format, arg1, arg2, arg3);
+        public void WarnFormat(string format, object arg1, object arg2, object arg3) 
+            => LogImpl(
+                Level.Warn, 
+                new SystemStringFormat(CultureInfo.InvariantCulture, format, arg1, arg2, arg3),
+                null);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Warn"/> level.
+        /// Logs a formatted message string with the <c>Warn</c> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="args">An Object array containing zero or more objects to format</param>
@@ -536,10 +592,14 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void WarnFormat(string format, params object[] args) => _logger.WarnFormat(format, args);
+        public void WarnFormat(string format, params object[] args) 
+            => LogImpl(
+                Level.Warn, 
+                new SystemStringFormat(CultureInfo.InvariantCulture, format, args),
+                null);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Warn"/> level.
+        /// Logs a formatted message string with the <c>Warn</c> level.
         /// </summary>
         /// <param name="provider">An <see cref= "T:System.IFormatProvider" /> that supplies culture-specific formatting information</param>
         /// <param name="format">A String containing zero or more format items</param>
@@ -555,17 +615,23 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void WarnFormat(IFormatProvider provider, string format, params object[] args) =>
-            _logger.WarnFormat(provider, format, args);
+        public void WarnFormat(IFormatProvider provider, string format, params object[] args) => LogImpl(
+            Level.Warn, 
+            new SystemStringFormat(provider, format, args),
+            null);
+
+    #endregion
+
+    #region Error
 
         /// <summary>
-        /// Logs a message object with the <see cref="EasyLogLevel.Error"/> level.
+        /// Logs a message object with the <c>Error</c> level.
         /// </summary>
         /// <param name="message">The message object to be logged.</param>
         /// <remarks>
         /// <para>
         /// This method first checks if this logger is <c>Error</c> enabled by comparing the level of 
-        /// this logger with the <see cref="EasyLogLevel.Error"/> level. If this logger is <c>Error</c> 
+        /// this logger with the <c>Error</c> level. If this logger is <c>Error</c> 
         /// enabled, then it converts the message object (passed as parameter) to a string by invoking the appropriate
         /// <see cref="T:log4net.ObjectRenderer.IObjectRenderer"/>. It then proceeds to call all the registered appenders 
         /// in this logger  and also higher in the hierarchy depending on the value of the additivity flag.
@@ -577,19 +643,19 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void Error(object message) => _logger.Error(message);
+        public void Error(object message) => LogImpl(Level.Error, message, null);
 
         /// <summary>
-        /// Logs a message object with the <see cref="EasyLogLevel.Error"/> level including 
+        /// Logs a message object with the <c>Error</c> level including 
         /// the stack trace of the <see cref="T:System.Exception"/> passed as a parameter.
         /// </summary>
         /// <param name="message">The message object to be logged.</param>
         /// <param name="exception">The exception to be logged, including its stack trace.</param>
         [DebuggerStepThrough]
-        public void Error(object message, Exception exception) => _logger.Error(message, exception);
+        public void Error(object message, Exception exception) => LogImpl(Level.Error, message, exception);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Error"/> level.
+        /// Logs a formatted message string with the <c>Error</c> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg">The object to format</param>
@@ -605,10 +671,11 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void ErrorFormat(string format, object arg) => _logger.ErrorFormat(format, arg);
+        public void ErrorFormat(string format, object arg) 
+            => LogImpl(Level.Error, new SystemStringFormat(CultureInfo.InvariantCulture, format, arg), null);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Error"/> level.
+        /// Logs a formatted message string with the <c>Error</c> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg1">The first object to format</param>
@@ -620,11 +687,14 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void ErrorFormat(string format, object arg1, object arg2) => 
-            _logger.ErrorFormat(format, arg1, arg2);
+        public void ErrorFormat(string format, object arg1, object arg2) 
+            => LogImpl(
+                Level.Error, 
+                new SystemStringFormat(CultureInfo.InvariantCulture, format, arg1, arg2), 
+                null);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Error"/> level.
+        /// Logs a formatted message string with the <c>Error</c> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg1">The first object to format</param>
@@ -637,11 +707,14 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void ErrorFormat(string format, object arg1, object arg2, object arg3) => 
-            _logger.ErrorFormat(format, arg1, arg2, arg3);
+        public void ErrorFormat(string format, object arg1, object arg2, object arg3) 
+            => LogImpl(
+                Level.Error, 
+                new SystemStringFormat(CultureInfo.InvariantCulture, format, arg1, arg2, arg3),
+                null);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Error"/> level.
+        /// Logs a formatted message string with the <c>Error</c> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="args">An Object array containing zero or more objects to format</param>
@@ -656,10 +729,14 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void ErrorFormat(string format, params object[] args) => _logger.ErrorFormat(format, args);
+        public void ErrorFormat(string format, params object[] args) 
+            => LogImpl(
+                Level.Error, 
+                new SystemStringFormat(CultureInfo.InvariantCulture, format, args),
+                null);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Error"/> level.
+        /// Logs a formatted message string with the <c>Error</c> level.
         /// </summary>
         /// <param name="provider">An <see cref= "T:System.IFormatProvider" /> that supplies culture-specific formatting information</param>
         /// <param name="format">A String containing zero or more format items</param>
@@ -675,17 +752,24 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void ErrorFormat(IFormatProvider provider, string format, params object[] args) => 
-            _logger.ErrorFormat(provider, format, args);
+        public void ErrorFormat(IFormatProvider provider, string format, params object[] args) 
+            => LogImpl(
+                Level.Error, 
+                new SystemStringFormat(provider, format, args),
+                null);
+
+    #endregion
+
+    #region Fatal
 
         /// <summary>
-        /// Logs a message object with the <see cref="EasyLogLevel.Fatal"/> level.
+        /// Logs a message object with the <c>Fatal</c> level.
         /// </summary>
         /// <param name="message">The message object to be logged.</param>
         /// <remarks>
         /// <para>
         /// This method first checks if this logger is <c>Fatal</c> enabled by comparing the level of 
-        /// this logger with the <see cref="EasyLogLevel.Fatal"/> level. If this logger is <c>Fatal</c> 
+        /// this logger with the <c>Fatal</c> level. If this logger is <c>Fatal</c> 
         /// enabled, then it converts the message object (passed as parameter) to a string by invoking the appropriate
         /// <see cref="T:log4net.ObjectRenderer.IObjectRenderer"/>. It then proceeds to call all the registered appenders 
         /// in this logger  and also higher in the hierarchy depending on the value of the additivity flag.
@@ -697,19 +781,19 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void Fatal(object message) => _logger.Fatal(message);
+        public void Fatal(object message) => LogImpl(Level.Fatal, message, null);
 
         /// <summary>
-        /// Logs a message object with the <see cref="EasyLogLevel.Fatal"/> level including 
+        /// Logs a message object with the <c>Fatal</c> level including 
         /// the stack trace of the <see cref="T:System.Exception"/> passed as a parameter.
         /// </summary>
         /// <param name="message">The message object to be logged.</param>
         /// <param name="exception">The exception to be logged, including its stack trace.</param>
         [DebuggerStepThrough]
-        public void Fatal(object message, Exception exception) => _logger.Fatal(message, exception);
+        public void Fatal(object message, Exception exception) => LogImpl(Level.Fatal, message, exception);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Fatal"/> level.
+        /// Logs a formatted message string with the <c>Fatal</c> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg">The object to format</param>
@@ -725,10 +809,11 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void FatalFormat(string format, object arg) => _logger.FatalFormat(format, arg);
+        public void FatalFormat(string format, object arg) 
+            => LogImpl(Level.Fatal, new SystemStringFormat(CultureInfo.InvariantCulture, format, arg), null);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Fatal"/> level.
+        /// Logs a formatted message string with the <c>Fatal</c> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg1">The first object to format</param>
@@ -740,11 +825,14 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void FatalFormat(string format, object arg1, object arg2) => 
-            _logger.FatalFormat(format, arg1, arg2);
+        public void FatalFormat(string format, object arg1, object arg2) 
+            => LogImpl(
+                Level.Fatal, 
+                new SystemStringFormat(CultureInfo.InvariantCulture, format, arg1, arg2), 
+                null);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Fatal"/> level.
+        /// Logs a formatted message string with the <c>Fatal</c> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="arg1">The first object to format</param>
@@ -757,11 +845,14 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void FatalFormat(string format, object arg1, object arg2, object arg3) => 
-            _logger.FatalFormat(format, arg1, arg2, arg3);
+        public void FatalFormat(string format, object arg1, object arg2, object arg3) 
+            => LogImpl(
+                Level.Fatal, 
+                new SystemStringFormat(CultureInfo.InvariantCulture, format, arg1, arg2, arg3),
+                null);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Fatal"/> level.
+        /// Logs a formatted message string with the <c>Fatal</c> level.
         /// </summary>
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="args">An Object array containing zero or more objects to format</param>
@@ -776,10 +867,14 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void FatalFormat(string format, params object[] args) => _logger.FatalFormat(format, args);
+        public void FatalFormat(string format, params object[] args) 
+            => LogImpl(
+                Level.Fatal, 
+                new SystemStringFormat(CultureInfo.InvariantCulture, format, args),
+                null);
 
         /// <summary>
-        /// Logs a formatted message string with the <see cref="EasyLogLevel.Fatal"/> level.
+        /// Logs a formatted message string with the <c>Fatal</c> level.
         /// </summary>
         /// <param name="provider">An <see cref= "T:System.IFormatProvider" /> that supplies culture-specific formatting information</param>
         /// <param name="format">A String containing zero or more format items</param>
@@ -795,20 +890,83 @@
         /// </para>
         /// </remarks>
         [DebuggerStepThrough]
-        public void FatalFormat(IFormatProvider provider, string format, params object[] args) => 
-            _logger.FatalFormat(provider, format, args);
+        public void FatalFormat(IFormatProvider provider, string format, params object[] args) 
+            => LogImpl(
+                Level.Fatal, 
+                new SystemStringFormat(provider, format, args),
+                null);
 
+    #endregion
+
+        private void LogImpl(Level level, object message, Exception exception)
+        {
+            if (!IsEnabledFor(level)) { return; }
+
+            _logger.Logger.Log(
+                ThisDeclaringType, 
+                level, 
+                PrefixScopesIfAny(message is string msgStr ? msgStr : message.ToString()), 
+                exception);
+        }
+
+        private static string PrefixScopesIfAny(string message)
+        {
+            if (Scope.IsEmpty) { return message; }
+            
+            StringBuilder builder;
+
+            var scopes = Scope.Scopes;
+            lock (scopes)
+            {
+                if (scopes.Count == 1)
+                {
+                    return string.Concat(scopes[0], " ", message);
+                }
+
+                builder = StringBuilderCache.Acquire();
+
+                // ReSharper disable once ForCanBeConvertedToForeach
+                for (var i = 0; i < scopes.Count; i++)
+                {
+                    var scope = scopes[i];
+                    builder.Append(scope).Append(' ');
+                }
+            }
+
+            builder.Append(message);
+
+            return StringBuilderCache.GetStringAndRelease(builder);
+        }
+        
         /// <summary>
         /// Checks if this logger is enabled for the given <paramref name="level"/> passed as parameter. 
         /// </summary>
         [DebuggerStepThrough]
-        public bool IsEnabledFor(Level level) => _logger.Logger.IsEnabledFor(level);
+        private bool IsEnabledFor(Level level) => _logger.Logger.IsEnabledFor(level);
 
-        /// <summary>
-        /// Generates a logging event for the specified <paramref name="level"/> using 
-        /// the <paramref name="message"/> and <paramref name="exception"/>. 
-        /// </summary>
-        [DebuggerStepThrough]
-        internal void Log(Level level, object message, Exception exception = null) => _logger.Logger.Log(ThisDeclaringType, level, message, exception);
+        private static class StringBuilderCache
+        {
+            [ThreadStatic]
+            private static StringBuilder _cache;
+
+            [DebuggerStepThrough]
+            public static StringBuilder Acquire()
+            {
+                var result = _cache;
+                if (result == null) { return new StringBuilder(); }
+
+                result.Clear();
+                _cache = null; // of that if caller forgets to release and return it is not kept alive by this class
+                return result;
+            }
+
+            [DebuggerStepThrough]
+            public static string GetStringAndRelease(StringBuilder builder)
+            {
+                var result = builder.ToString();
+                _cache = builder;
+                return result;
+            }
+        }
     }
 }
