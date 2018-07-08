@@ -5,20 +5,30 @@
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Net;
-    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using log4net.Appender;
     using log4net.Core;
+#if NETSTANDARD1_3
+    using System.Text;
     using Newtonsoft.Json;
-    using Newtonsoft.Json.Serialization;
+    using JsonSerializer = Newtonsoft.Json.JsonSerializer;
+    using Newtonsoft.Json.Serialization;    
+#else
+    using Utf8Json;
+    using Utf8Json.Formatters;
+    using Utf8Json.Resolvers;
+#endif
+    
 
     /// <summary>
     /// An appender for <c>POSTing</c> log events to a given endpoint.
     /// </summary>
     public sealed class HTTPAppender : AppenderSkeleton
     {
+#if NETSTANDARD1_3
         private static readonly JsonSerializer Serializer;
+#endif
         private readonly ThreadLocal<LoggingEvent[]> _singleLogEventPool;
         private readonly int _pid;
         private readonly string _processName;
@@ -28,6 +38,7 @@
 
         static HTTPAppender()
         {
+#if NETSTANDARD1_3
             Serializer = new JsonSerializer
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
@@ -35,8 +46,7 @@
                 DateTimeZoneHandling = DateTimeZoneHandling.Utc,
                 Formatting = Formatting.None
             };
-
-            PrettifyJSON();
+#endif
         }
 
         /// <summary>
@@ -138,16 +148,21 @@
 
             try
             {
-                using (Stream stream = await req.GetRequestStreamAsync().ConfigureAwait(false))
-                using (TextWriter writer = new StreamWriter(stream, Encoding.UTF8, 1024, true))
-                using (JsonTextWriter jsonWriter = new JsonTextWriter(writer))
+                using (var stream = await req.GetRequestStreamAsync().ConfigureAwait(false))
                 {
-                    Serializer.Serialize(jsonWriter, payload);
-                }
-
-                using (var resp = (HttpWebResponse) await req.GetResponseAsync().ConfigureAwait(false))
-                {
-                    return IsSuccessStatusCode(resp);
+#if NETSTANDARD1_3
+                    using (TextWriter writer = new StreamWriter(stream, Encoding.UTF8, 1024, true))
+                    using (JsonTextWriter jsonWriter = new JsonTextWriter(writer))
+                    {
+                        Serializer.Serialize(jsonWriter, payload);
+                    }
+#else
+                    JsonSerializer.Serialize(stream, payload, StandardResolver.AllowPrivateCamelCase);
+#endif
+                    using (var resp = (HttpWebResponse) await req.GetResponseAsync().ConfigureAwait(false))
+                    {
+                        return IsSuccessStatusCode(resp);
+                    }
                 }
             } catch (WebException)
             {
@@ -161,6 +176,7 @@
             for (var i = 0; i < logEvents.Length; i++)
             {
                 var curr = logEvents[i];
+
                 result[i] = new Entry
                 {
                     DateTimeOffset = new DateTimeOffset(curr.TimeStamp),
@@ -182,9 +198,6 @@
             }
             return false;
         }
-
-        [Conditional("DEBUG")]
-        private static void PrettifyJSON() => Serializer.Formatting = Formatting.Indented;
 
         [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]
         private sealed class Payload
