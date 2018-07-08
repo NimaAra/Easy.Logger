@@ -27,6 +27,10 @@
             Console.WriteLine("[{0:HH:mm:ss.fff}] - [Program] - Disposing", DateTimeOffset.UtcNow);
             Log4NetService.Instance.Dispose();
             Console.WriteLine("[{0:HH:mm:ss.fff}] - [Program] - Disposed", DateTimeOffset.UtcNow);
+
+            Console.WriteLine("Gen 0: {0}", GC.CollectionCount(0).ToString());
+            Console.WriteLine("Gen 1: {0}", GC.CollectionCount(1).ToString());
+            Console.WriteLine("Gen 2: {0}", GC.CollectionCount(2).ToString());
         }
 
         public Program(TimeSpan duration)
@@ -45,10 +49,6 @@
             //            TestMultiThreading();
             //            TestIdle();
             _logger.Warn("Benchmarking ended");
-
-            Console.WriteLine("Gen 0: {0}", GC.CollectionCount(0).ToString());
-            Console.WriteLine("Gen 1: {0}", GC.CollectionCount(1).ToString());
-            Console.WriteLine("Gen 2: {0}", GC.CollectionCount(2).ToString());
         }
 
         private void TestThroughput()
