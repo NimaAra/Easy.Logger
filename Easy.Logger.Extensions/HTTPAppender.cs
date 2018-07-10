@@ -20,7 +20,6 @@
     using Utf8Json.Resolvers;
 #endif
     
-
     /// <summary>
     /// An appender for <c>POSTing</c> log events to a given endpoint.
     /// </summary>
