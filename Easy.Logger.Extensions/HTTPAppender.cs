@@ -25,10 +25,11 @@
     /// </summary>
     public sealed class HTTPAppender : AppenderSkeleton
     {
+        private static readonly ThreadLocal<LoggingEvent[]> _singleLogEventPool;
+
 #if NETSTANDARD1_3
         private static readonly JsonSerializer Serializer;
 #endif
-        private readonly ThreadLocal<LoggingEvent[]> _singleLogEventPool;
         private readonly int _pid;
         private readonly string _processName;
         
@@ -37,6 +38,8 @@
 
         static HTTPAppender()
         {
+            _singleLogEventPool = new ThreadLocal<LoggingEvent[]>(() => new LoggingEvent[1]);
+
 #if NETSTANDARD1_3
             Serializer = new JsonSerializer
             {
@@ -53,8 +56,6 @@
         /// </summary>
         public HTTPAppender()
         {
-            _singleLogEventPool = new ThreadLocal<LoggingEvent[]>(() => new LoggingEvent[1]);
-
             using (var p = Process.GetCurrentProcess())
             {
                 _pid = p.Id;
