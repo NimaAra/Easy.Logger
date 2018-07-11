@@ -12,10 +12,10 @@
     /// </summary>
     public sealed class AsyncBufferingForwardingAppender : BufferingForwardingAppender
     {
-        // ReSharper disable once InconsistentNaming
         private const int DEFAULT_IDLE_TIME = 500;
-        
-        private readonly Sequencer<Action> _sequencer;
+
+        private readonly Sequencer<LoggingEvent[]> _sequencer;
+
         private TimeSpan _idleTimeThreshold;
         private Timer _idleFlushTimer;
         private DateTime _lastFlushTime;
@@ -51,8 +51,9 @@
         /// </summary>
         public AsyncBufferingForwardingAppender()
         {
-            _sequencer = new Sequencer<Action>(action => action());
-            _sequencer.OnException += (sender, args) => LogLog.Error(GetType(), "An exception occurred while processing LogEvents.", args.Exception);
+            _sequencer = new Sequencer<LoggingEvent[]>(Process);
+            _sequencer.OnException += (sender, args) 
+                => LogLog.Error(GetType(), "An exception occurred while processing LogEvents.", args.Exception);
         }
 
         /// <summary>
@@ -62,12 +63,12 @@
         {
             base.ActivateOptions();
 
+            LogWarningIfLossy();
+
             if (IdleTime <= 0) { IdleTime = DEFAULT_IDLE_TIME; }
             
             _idleTimeThreshold = TimeSpan.FromMilliseconds(IdleTime);
-            _idleFlushTimer = new Timer(state => _sequencer.TryEnqueue(InvokeFlushIfIdle), null, _idleTimeThreshold, _idleTimeThreshold);
-
-            LogWarningIfLossy();
+            _idleFlushTimer = new Timer(InvokeFlushIfIdle, null, _idleTimeThreshold, _idleTimeThreshold);
         }
 
         /// <summary>
@@ -78,11 +79,7 @@
         {
             if (!_sequencer.ShutdownRequested)
             {
-                _sequencer.Enqueue(() =>
-                {
-                    base.SendBuffer(events);
-                    _lastFlushTime = DateTime.UtcNow;
-                });
+                _sequencer.Enqueue(events);
             } else
             {
                 base.SendBuffer(events);
@@ -96,15 +93,26 @@
         {
             _idleFlushTimer.Dispose();
             _sequencer.Shutdown();
+
+            Flush();
+
             base.OnClose();
+        }
+
+        private void Process(LoggingEvent[] logEvents)
+        {
+            base.SendBuffer(logEvents);
+            _lastFlushTime = DateTime.UtcNow;
         }
 
         /// <summary>
         /// This only flushes if <see cref="BufferingAppenderSkeleton.Lossy"/> is <c>False</c>.
         /// </summary>
-        private void InvokeFlushIfIdle()
+        private void InvokeFlushIfIdle(object _)
         {
             if (!IsIdle) { return; }
+            if (_sequencer.ShutdownRequested) { return; }
+
             Flush();
         }
 

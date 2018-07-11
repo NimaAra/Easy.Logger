@@ -14,7 +14,6 @@
         private readonly CancellationTokenSource _cts;
         private readonly BlockingCollection<T> _queue;
         private readonly Task _worker;
-        private volatile bool _isShutdownRequested;
 
         /// <summary>
         /// Creates an instance of <see cref="Sequencer{T}"/>
@@ -69,7 +68,7 @@
         /// <summary>
         /// Gets whether <see cref="Sequencer{T}"/> has started to shutdown.
         /// </summary>
-        public bool ShutdownRequested => _isShutdownRequested;
+        public bool ShutdownRequested { get; private set; }
 
         /// <summary>
         /// Thrown when the <see cref="_worker"/> throws an exception.
@@ -145,8 +144,11 @@
         /// </param>
         public void Shutdown(bool waitForPendingItems = true)
         {
-            _isShutdownRequested = true;
-            _queue.CompleteAdding();
+            lock (_queue)
+            {
+                _queue.CompleteAdding();
+                ShutdownRequested = true;
+            }
 
             if (waitForPendingItems)
             {
