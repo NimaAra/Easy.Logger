@@ -20,6 +20,7 @@
         /// <param name="name">The name of the scope</param>
         IDisposable GetScopedLogger(string name);
 
+    #region Levels Enabled
         /// <summary>
         /// Gets the flag indicating whether the logger is enabled for 
         /// <c>Trace</c> messages.
@@ -55,7 +56,9 @@
         /// <c>Fatal</c> messages.
         /// </summary>
         bool IsFatalEnabled { get; }
+    #endregion
 
+    #region Trace
         /// <summary>
         /// Logs a <c>Trace</c> level message object.
         /// </summary>
@@ -109,7 +112,9 @@
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="args">An Object array containing zero or more objects to format</param>
         void TraceFormat(IFormatProvider provider, string format, params object[] args);
+    #endregion
 
+    #region Debug
         /// <summary>
         /// Logs a <c>Debug</c> level message object.
         /// </summary>
@@ -163,7 +168,9 @@
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="args">An Object array containing zero or more objects to format</param>
         void DebugFormat(IFormatProvider provider, string format, params object[] args);
+    #endregion
 
+    #region Info
         /// <summary>
         /// Logs a <c>Info</c> level message object.
         /// </summary>
@@ -217,7 +224,9 @@
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="args">An Object array containing zero or more objects to format</param>
         void InfoFormat(IFormatProvider provider, string format, params object[] args);
+    #endregion
 
+    #region Warn
         /// <summary>
         /// Logs a <c>Warn</c> level message object.
         /// </summary>
@@ -271,7 +280,9 @@
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="args">An Object array containing zero or more objects to format</param>
         void WarnFormat(IFormatProvider provider, string format, params object[] args);
+    #endregion
 
+    #region Error
         /// <summary>
         /// Logs a <c>Error</c> level message object.
         /// </summary>
@@ -325,7 +336,9 @@
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="args">An Object array containing zero or more objects to format</param>
         void ErrorFormat(IFormatProvider provider, string format, params object[] args);
+    #endregion
 
+    #region Fatal
         /// <summary>
         /// Logs a <c>Fatal</c> level message object.
         /// </summary>
@@ -379,5 +392,13 @@
         /// <param name="format">A String containing zero or more format items</param>
         /// <param name="args">An Object array containing zero or more objects to format</param>
         void FatalFormat(IFormatProvider provider, string format, params object[] args);
+    #endregion
     }
+
+    /// <summary>
+    /// The <see cref="IEasyLogger{T}"/> interface specifying 
+    /// available methods for different levels of logging.
+    /// </summary>
+    // ReSharper disable once UnusedTypeParameter
+    public interface IEasyLogger<T> : IEasyLogger { }
 }
