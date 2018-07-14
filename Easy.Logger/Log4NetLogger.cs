@@ -10,15 +10,28 @@
     using log4net.Util;
 
     /// <summary>
+    /// A <c>log4net</c> implementation of the <see cref="IEasyLogger{T}"/> interface.
+    /// </summary>
+    public sealed class Log4NetLogger<T> : Log4NetLogger, IEasyLogger<T>
+    {
+        static Log4NetLogger() => _ = Log4NetService.Instance;
+
+        /// <summary>
+        /// Creates an instance of the <see cref="Log4NetLogger{T}"/> where the name of the logger is
+        /// set as the name of the type of <typeparamref name="T"/>.
+        /// </summary>
+        public Log4NetLogger() : base(LogManager.GetLogger(typeof(T))) {}
+    }
+    
+    /// <summary>
     /// A <c>log4net</c> implementation of the <see cref="ILogger"/> interface.
     /// </summary>
-    internal sealed class Log4NetLogger : IEasyLogger
+    public class Log4NetLogger : IEasyLogger
     {
 		private static readonly Type ThisDeclaringType = typeof(Log4NetLogger);
         private readonly ILog _logger;
 
-        [DebuggerStepThrough]
-        internal Log4NetLogger(ILog logger) => _logger = logger; 
+        protected internal Log4NetLogger(ILog logger) => _logger = logger; 
 
         /// <summary>
         /// Gets the logger name.
@@ -898,17 +911,6 @@
 
     #endregion
 
-        private void LogImpl(Level level, object message, Exception exception)
-        {
-            if (!IsEnabledFor(level)) { return; }
-
-            _logger.Logger.Log(
-                ThisDeclaringType, 
-                level, 
-                PrefixScopesIfAny(message is string msgStr ? msgStr : message.ToString()), 
-                exception);
-        }
-
         private static string PrefixScopesIfAny(string message)
         {
             if (Scope.IsEmpty) { return message; }
@@ -937,12 +939,19 @@
 
             return StringBuilderCache.GetStringAndRelease(builder);
         }
-        
-        /// <summary>
-        /// Checks if this logger is enabled for the given <paramref name="level"/> passed as parameter. 
-        /// </summary>
-        [DebuggerStepThrough]
+
         private bool IsEnabledFor(Level level) => _logger.Logger.IsEnabledFor(level);
+
+        private void LogImpl(Level level, object message, Exception exception)
+        {
+            if (!IsEnabledFor(level)) { return; }
+
+            _logger.Logger.Log(
+                ThisDeclaringType, 
+                level, 
+                PrefixScopesIfAny(message is string msgStr ? msgStr : message.ToString()), 
+                exception);
+        }
 
         private static class StringBuilderCache
         {

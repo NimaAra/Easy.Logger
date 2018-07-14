@@ -2,6 +2,7 @@
 {
     using System;
     using System.Globalization;
+    using Easy.Logger.Interfaces;
     using log4net;
     using log4net.Core;
     using Moq;
@@ -13,7 +14,7 @@
     {
         private Mock<ILog> _mockedLogger;
         private Mock<ILogger> _mockedInnerLogger;
-        private Log4NetLogger _logger;
+        private IEasyLogger _logger;
 
         [OneTimeSetUp]
         public void SetUp()

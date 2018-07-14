@@ -71,22 +71,17 @@ The scoping feature has been implemented with performance in mind and is encoura
 
 ### Dependency Injection:
 
-The library has been designed with DI in mind so as an example, given the service class and its corresponding interface below:
+The library has been designed with _DI_ in mind so as an example, given the service class and its corresponding interface below:
 
 ```csharp
 public class MyService : IService
 {
     private readonly IEasyLogger _logger;
 
-    public MyService(ILogService logService)
-    {
-        _logger = logService.GetLogger(this.GetType());
-    }
+    public MyService(ILogService logService) 
+        => _logger = logService.GetLogger(this.GetType());
 
-    public void Start()
-    {
-        _logger.Debug("I am started");
-    }
+    public void Start(() => _logger.Debug("I am started"));
 }
 
 public interface IService
@@ -95,7 +90,7 @@ public interface IService
 }
 ```
 
-Using your favorite IoC container you can then do:
+Using your favorite _IoC_ container you can do:
 
 ```csharp
 var container = new Container();
@@ -105,7 +100,27 @@ container.Register<IService, MyService>();
 var service = container.GetInstance<IService>();
 service.Start();
 ```
-Running the above results in the following log entry:
+
+The above can be even further simplified by injecting the [`IEasyLogger<T>`](https://github.com/NimaAra/Easy.Logger/blob/bf8e0e4caa1443562438c18a2d29f4bc09407ec0/Easy.Logger.Interfaces/IEasyLogger.cs#L403) directly instead of the `ILogService`:
+
+```csharp
+public class MyService : IService
+{
+    private readonly IEasyLogger _logger;
+
+    public MyService(IEasyLogger<MyService> logger) => _logger = logger;
+
+    public void Start(() => _logger.Debug("I am started"));
+}
+```
+
+If your _IoC_ container supports [mapping generic interfaces to generic implementations](https://simpleinjector.readthedocs.io/en/latest/advanced.html#registration-of-open-generic-types), e.g. [Simple Injector](https://simpleinjector.org), then you can further simplify the registration by:
+
+```csharp
+container.Register(typeof(IEasyLogger<>), typeof(Log4NetLogger<>));
+```
+
+Running any of the flavors above results in the following log entry:
 
 ```
 [2016-06-29 00:15:51,661] [DEBUG] [ 1] [MyService] - I am started

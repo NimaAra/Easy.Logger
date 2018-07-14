@@ -43,13 +43,11 @@
             assembly = GetType().Assembly;
 #endif
             _repository = LogManager.GetRepository(assembly);
-            log4net.Util.SystemInfo.NullText = string.Empty;
-
+            
             var defaultConfigFile = new FileInfo(Path.Combine(log4NetConfigDir, "log4net.config"));
             if (!defaultConfigFile.Exists) { return; }
             
-            XmlConfigurator.ConfigureAndWatch(_repository, defaultConfigFile);
-            Configuration = defaultConfigFile;
+            ConfigureImpl(_repository, defaultConfigFile);
         }
         
         /// <summary>
@@ -70,7 +68,7 @@
         /// </remarks>
         public void Configure(FileInfo configFile)
         {
-            if (configFile == null)
+            if (configFile is null)
             {
                 throw new ArgumentException(nameof(configFile) + " cannot be null", nameof(configFile));
             }
@@ -82,21 +80,7 @@
                     configFile.FullName);
             }
 
-            XmlConfigurator.ConfigureAndWatch(_repository, configFile);
-            Configuration = configFile;
-        }
-
-        /// <summary>
-        /// Obtains an <see cref="IEasyLogger"/> for the given <paramref name="loggerType"/>.
-        /// </summary>
-        /// <param name="loggerType">The <see cref="Type"/> for which an <see cref="IEasyLogger"/> should be returned</param>
-        /// <exception cref="InvalidOperationException">Thrown if <see cref="Log4NetService"/> is not configured with a valid configuration file.</exception>
-        /// <returns>The <see cref="IEasyLogger"/>An instance of the logger.</returns>
-        [DebuggerStepThrough]
-        public IEasyLogger GetLogger(Type loggerType)
-        {
-            EnsureConfigured();
-            return new Log4NetLogger(LogManager.GetLogger(loggerType));
+            ConfigureImpl(_repository, configFile);
         }
 
         /// <summary>
@@ -113,19 +97,44 @@
         }
 
         /// <summary>
+        /// Obtains an <see cref="IEasyLogger"/> for the given <paramref name="loggerType"/>.
+        /// </summary>
+        /// <param name="loggerType">The <see cref="Type"/> for which an <see cref="IEasyLogger"/> should be returned</param>
+        /// <exception cref="InvalidOperationException">Thrown if <see cref="Log4NetService"/> is not configured with a valid configuration file.</exception>
+        /// <returns>The <see cref="IEasyLogger"/>An instance of the logger.</returns>
+        [DebuggerStepThrough]
+        public IEasyLogger GetLogger(Type loggerType)
+        {
+            EnsureConfigured();
+            return new Log4NetLogger(LogManager.GetLogger(loggerType));
+        }
+
+        /// <summary>
         /// Obtains an <see cref="IEasyLogger"/> for the given <typeparamref name="T"/>.
         /// </summary>
         /// <typeparam name="T">The type for which an <see cref="IEasyLogger"/> should be returned</typeparam>
         /// <exception cref="InvalidOperationException">Thrown if <see cref="Log4NetService"/> is not configured with a valid configuration file.</exception>
         /// <returns>The <see cref="IEasyLogger"/>An instance of the logger.</returns>
         [DebuggerStepThrough]
-        public IEasyLogger GetLogger<T>() => GetLogger(typeof(T));
+        public IEasyLogger GetLogger<T>()
+        {
+            EnsureConfigured();
+            return new Log4NetLogger<T>();
+        } 
 
         /// <summary>
         /// Disposes the <see cref="Log4NetService"/>
         /// </summary>
         [DebuggerStepThrough]
         public void Dispose() => LogManager.Shutdown();
+
+        private void ConfigureImpl(ILoggerRepository repository, FileInfo configFile)
+        {
+            log4net.Util.SystemInfo.NullText = string.Empty;
+            
+            XmlConfigurator.ConfigureAndWatch(repository, configFile);
+            Configuration = configFile;
+        }
 
         private void EnsureConfigured()
         {

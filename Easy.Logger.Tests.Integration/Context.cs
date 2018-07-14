@@ -73,6 +73,10 @@
             logger.Fatal("This should not be inside any scope.");
 
             Thread.Sleep(TimeSpan.FromSeconds(1.5));
+
+            IEasyLogger anotherLogger = _logService.GetLogger<Context>();
+            anotherLogger.ShouldNotBeNull();
+            anotherLogger.Name.ShouldBe("Easy.Logger.Tests.Integration.Context");
         }
 
         [TearDown]
