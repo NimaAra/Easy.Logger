@@ -31,6 +31,10 @@
 		private static readonly Type ThisDeclaringType = typeof(Log4NetLogger);
         private readonly ILog _logger;
 
+        /// <summary>
+        /// Creates an instance of the <see cref="Log4NetLogger"/>.
+        /// </summary>
+        /// <param name="logger"></param>
         protected internal Log4NetLogger(ILog logger) => _logger = logger; 
 
         /// <summary>
