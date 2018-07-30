@@ -1,4 +1,10 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/k6ng7qdsd30c3nep?svg=true)](https://ci.appveyor.com/project/NimaAra/easy-logger)
+[![Build status](https://ci.appveyor.com/api/projects/status/k6ng7qdsd30c3nep?svg=true)](https://ci.appveyor.com/project/NimaAra/easy-logger)<br>
+
+### NuGet
+[![NuGet](https://img.shields.io/nuget/v/Easy.Logger.svg?label=Easy.Logger)](https://www.nuget.org/packages/Easy.Logger)
+[![NuGet](https://img.shields.io/nuget/v/Easy.Logger.Interfaces.svg?label=Easy.Logger.Interfaces)](https://www.nuget.org/packages/Easy.Logger.Interfaces)
+[![NuGet](https://img.shields.io/nuget/v/Easy.Logger.Extensions.svg?label=Easy.Logger.Extensions)](https://www.nuget.org/packages/Easy.Logger.Extensions)
+[![NuGet](https://img.shields.io/nuget/v/Easy.Logger.Extensions.Microsoft.svg?label=Easy.Logger.Extensions.Microsoft)](https://www.nuget.org/packages/Easy.Logger.Extensions.Microsoft)
 
 # Easy Logger
 A modern, high performance, cross platform wrapper for Log4Net.
@@ -133,6 +139,9 @@ The library does not need to be disposed explicitly as the framework takes care 
 logService.Dispose();
 ```
 
+## ASP.NET Core Integration
+_Easy.Logger_ can be used in *ASP.NET Core* by referencing the [_Easy.Logger.Extensions.Microsoft_]((https://www.nuget.org/packages/Easy.Logger.Extensions.Microsoft)) _NuGet_ package. For more details on how to get started, take a look at [HERE](https://github.com/NimaAra/Easy.Logger/blob/master/Easy.Logger.Extensions.Microsoft/README.md).
+
 ## Easy Logger Extensions
 The [_Easy.Logger.Extensions_*](https://github.com/NimaAra/Easy.Logger/tree/master/Easy.Logger.Extensions) package offers more functionality to extend _log4net_. The package currently contains the [HTTPAppender](https://github.com/NimaAra/Easy.Logger/blob/master/Easy.Logger.Extensions/HTTPAppender.cs) which uses the `HTTPClient` to _POST_ _JSON_ payloads of log events to an endpoint. Take the following configuration as an example:
 
@@ -258,8 +267,3 @@ The following payload will then be received at the endpoint:
 ```
 
 <p>* Requires minimum <i>NET 4.5</i> or <i>netstandard1.3</i>.</p>
-
-### NuGet
-* [Easy.Logger](https://www.nuget.org/packages/Easy.Logger/)
-* [Easy.Logger.Interfaces](https://www.nuget.org/packages/Easy.Logger.Interfaces/)
-* [Easy.Logger.Extensions](https://www.nuget.org/packages/Easy.Logger.Extensions/)

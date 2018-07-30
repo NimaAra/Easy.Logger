@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <PackageId>Easy.Logger.Extensions</PackageId>
-    <Description>Additional features and functionalities to extend Easy.Logger</Description>
+    <PackageId>Easy.Logger.Extensions.Microsoft</PackageId>
+    <Description>Easy.Logger implementation of the Microsoft.Extensions.Logging package which can also be used in ASP.NET Core.</Description>
     <Authors>Nima Ara</Authors>
     <Copyright>2018 Nima Ara</Copyright>
-    <PackageTags>log4net;Logging;Easy;Logger;Log;Extensions</PackageTags>
+    <PackageTags>log4net;Logging;Easy;Logger;Log;Microsoft.Extensions.Logging</PackageTags>
     <PackageProjectUrl>https://github.com/NimaAra/EasyLogger</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/NimaAra/EasyLogger/blob/master/LICENSE</PackageLicenseUrl>
     <PackageReleaseNotes>-</PackageReleaseNotes>
@@ -15,25 +15,15 @@
 
   <PropertyGroup>
     <TargetFrameworks>net45;netstandard1.3;netstandard2.0</TargetFrameworks>
-    <AssemblyTitle>Easy Logger Extensions</AssemblyTitle>
-    <AssemblyName>Easy.Logger.Extensions</AssemblyName>
+    <AssemblyTitle>Easy Logger ASP.NET Core</AssemblyTitle>
+    <AssemblyName>Easy.Logger.Extensions.Microsoft</AssemblyName>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
-    <DefineConstants>NETSTANDARD1_3</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="log4net" Version="2.0.8" />
-  </ItemGroup>
-  
-  <ItemGroup Condition=" '$(TargetFramework)' != 'netstandard1.3' ">
-    <PackageReference Include="Utf8Json" Version="1.3.6.1" />
-  </ItemGroup>
-  
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="Easy.Logger" Version="3.6.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.0.0" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">

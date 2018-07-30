@@ -26,6 +26,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Easy.Logger.Extensions.Microsoft", "Easy.Logger.Extensions.Microsoft\Easy.Logger.Extensions.Microsoft.csproj", "{DAAFA936-DA6B-4BF5-8681-107923EACFE9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,6 +62,10 @@ Global
 		{F9A7EB15-6EA6-4512-A6F9-A9A23C78B10F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9A7EB15-6EA6-4512-A6F9-A9A23C78B10F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9A7EB15-6EA6-4512-A6F9-A9A23C78B10F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DAAFA936-DA6B-4BF5-8681-107923EACFE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAAFA936-DA6B-4BF5-8681-107923EACFE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAAFA936-DA6B-4BF5-8681-107923EACFE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAAFA936-DA6B-4BF5-8681-107923EACFE9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
