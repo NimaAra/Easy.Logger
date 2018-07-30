@@ -9,13 +9,13 @@
     public static class EasyLoggerFactoryExtensions
     {
         /// <summary>
-        /// Adds the <see href="https://github.com/NimaAra/Easy.Logger"/> to <paramref name="factory"/>.
+        /// Adds <c>Easy.Logger</c> to <paramref name="factory"/>.
         /// </summary>
         public static ILoggerFactory AddEasyLogger(this ILoggerFactory factory)
             => AddEasyLogger(factory, null);
 
         /// <summary>
-        /// Adds the <see href="https://github.com/NimaAra/Easy.Logger"/> to <paramref name="factory"/>.
+        /// Adds <c>Easy.Logger</c> to <paramref name="factory"/>.
         /// </summary>
         /// <param name="factory">An instance of the <see cref="ILoggerFactory"/>.</param>
         /// <param name="config">A valid configuration file.</param>
