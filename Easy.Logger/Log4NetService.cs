@@ -10,7 +10,7 @@
     using log4net.Repository;
 
     /// <summary>
-    /// An implementation of a log4net service.
+    /// An implementation of the <see cref="ILogService"/> based on <c>log4net</c>.
     /// </summary>
     public sealed class Log4NetService : ILogService
     {
