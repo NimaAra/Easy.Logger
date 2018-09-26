@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
 
     /// <summary>
     /// Provides scoped logging.
@@ -9,32 +10,32 @@
     public sealed class Scope : IDisposable
     {
         private readonly string _name;
-        
-        /// <summary>
-        /// Gets all the scopes.
-        /// </summary>
-        internal static List<string> Scopes { get; } = new List<string>(10);
-
-        /// <summary>
-        /// Gets the flag indicating whether there are any scopes.
-        /// </summary>
-        internal static bool IsEmpty
-        {
-            get { lock (Scopes) { return Scopes.Count == 0; } }
-        }
 
         /// <summary>
         /// Creates an instance of the <see cref="Scope"/> with the given <paramref name="name"/>.
         /// </summary>
-        internal Scope(string name)
+        private Scope(string name)
         {
             _name = name;
-            lock (Scopes) { Scopes.Add(name); }
+            Scopes.Value.Add(name);
         }
+
+        internal static Scope Add(string name) => new Scope(name);
+
+        /// <summary>
+        /// Gets all the scopes.
+        /// </summary>
+        internal static ThreadLocal<List<string>> Scopes { get; } 
+            = new ThreadLocal<List<string>>(() => new List<string>(10));
+
+        /// <summary>
+        /// Gets the flag indicating whether there are any scopes.
+        /// </summary>
+        internal static bool IsEmpty => Scopes.Value.Count == 0;
 
         /// <summary>
         /// Removes the scope.
         /// </summary>
-        public void Dispose() { lock (Scopes) { Scopes.Remove(_name); } }
+        public void Dispose() { Scopes.Value.Remove(_name); }
     }
 }

@@ -47,7 +47,7 @@
         /// <paramref name="name"/> which will then be rendered as part of the message.
         /// </summary>
         /// <param name="name">The name of the scope</param>
-        public IDisposable GetScopedLogger(string name) => new Scope(name);
+        public IDisposable GetScopedLogger(string name) => Scope.Add(name);
 
     #region Levels Enabled
 
@@ -919,24 +919,19 @@
         {
             if (Scope.IsEmpty) { return message; }
             
-            StringBuilder builder;
-
-            var scopes = Scope.Scopes;
-            lock (scopes)
+            var scopes = Scope.Scopes.Value;
+            if (scopes.Count == 1)
             {
-                if (scopes.Count == 1)
-                {
-                    return string.Concat(scopes[0], " ", message);
-                }
+                return string.Concat(scopes[0], " ", message);
+            }
 
-                builder = StringBuilderCache.Acquire();
+            var builder = StringBuilderCache.Acquire();
 
-                // ReSharper disable once ForCanBeConvertedToForeach
-                for (var i = 0; i < scopes.Count; i++)
-                {
-                    var scope = scopes[i];
-                    builder.Append(scope).Append(' ');
-                }
+            // ReSharper disable once ForCanBeConvertedToForeach
+            for (var i = 0; i < scopes.Count; i++)
+            {
+                var scope = scopes[i];
+                builder.Append(scope).Append(' ');
             }
 
             builder.Append(message);
