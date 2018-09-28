@@ -13,6 +13,7 @@
     /// </summary>
     public sealed class Log4NetLogger<T> : Log4NetLogger, IEasyLogger<T>
     {
+        // ReSharper disable once AssignmentIsFullyDiscarded
         static Log4NetLogger() => _ = Log4NetService.Instance;
 
         /// <summary>
