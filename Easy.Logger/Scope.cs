@@ -1,41 +1,33 @@
 ﻿namespace Easy.Logger
 {
     using System;
-    using System.Collections.Generic;
-    using System.Threading;
+    using log4net;
+    using log4net.Util;
 
     /// <summary>
     /// Provides scoped logging.
     /// </summary>
-    public sealed class Scope : IDisposable
+    public struct Scope : IDisposable
     {
-        private readonly string _name;
+        private const string ContextName = "Easy.Logger.Scope";
+        private static readonly LogicalThreadContextStacks Stacks = LogicalThreadContext.Stacks;
 
         /// <summary>
         /// Creates an instance of the <see cref="Scope"/> with the given <paramref name="name"/>.
         /// </summary>
-        private Scope(string name)
-        {
-            _name = name;
-            Scopes.Value.Add(name);
-        }
+        internal Scope(string name) => Stacks[ContextName].Push(name);
 
-        internal static Scope Add(string name) => new Scope(name);
-
-        /// <summary>
-        /// Gets all the scopes.
-        /// </summary>
-        internal static ThreadLocal<List<string>> Scopes { get; } 
-            = new ThreadLocal<List<string>>(() => new List<string>(10));
-
-        /// <summary>
-        /// Gets the flag indicating whether there are any scopes.
-        /// </summary>
-        internal static bool IsEmpty => Scopes.Value.Count == 0;
+        internal static string ScopeMessage => Stacks[ContextName].ToString();
 
         /// <summary>
         /// Removes the scope.
         /// </summary>
-        public void Dispose() { Scopes.Value.Remove(_name); }
+        public void Dispose() => Stacks[ContextName].Pop();
+
+        /// <summary>
+        /// Returns the current context information for this scope.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString() => ScopeMessage;
     }
 }

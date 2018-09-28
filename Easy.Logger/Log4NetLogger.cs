@@ -3,7 +3,6 @@
     using System;
     using System.Diagnostics;
     using System.Globalization;
-    using System.Text;
     using Easy.Logger.Interfaces;
     using log4net;
     using log4net.Core;
@@ -47,7 +46,7 @@
         /// <paramref name="name"/> which will then be rendered as part of the message.
         /// </summary>
         /// <param name="name">The name of the scope</param>
-        public IDisposable GetScopedLogger(string name) => Scope.Add(name);
+        public IDisposable GetScopedLogger(string name) => new Scope(name);
 
     #region Levels Enabled
 
@@ -917,26 +916,8 @@
 
         private static string PrefixScopesIfAny(string message)
         {
-            if (Scope.IsEmpty) { return message; }
-            
-            var scopes = Scope.Scopes.Value;
-            if (scopes.Count == 1)
-            {
-                return string.Concat(scopes[0], " ", message);
-            }
-
-            var builder = StringBuilderCache.Acquire();
-
-            // ReSharper disable once ForCanBeConvertedToForeach
-            for (var i = 0; i < scopes.Count; i++)
-            {
-                var scope = scopes[i];
-                builder.Append(scope).Append(' ');
-            }
-
-            builder.Append(message);
-
-            return StringBuilderCache.GetStringAndRelease(builder);
+            var scopeMsg = Scope.ScopeMessage;
+            return scopeMsg is null ? message : string.Concat(scopeMsg, " ", message);
         }
 
         private bool IsEnabledFor(Level level) => _logger.Logger.IsEnabledFor(level);
@@ -950,31 +931,6 @@
                 level, 
                 PrefixScopesIfAny(message is string msgStr ? msgStr : message.ToString()), 
                 exception);
-        }
-
-        private static class StringBuilderCache
-        {
-            [ThreadStatic]
-            private static StringBuilder _cache;
-
-            [DebuggerStepThrough]
-            public static StringBuilder Acquire()
-            {
-                var result = _cache;
-                if (result == null) { return new StringBuilder(); }
-
-                result.Clear();
-                _cache = null; // of that if caller forgets to release and return it is not kept alive by this class
-                return result;
-            }
-
-            [DebuggerStepThrough]
-            public static string GetStringAndRelease(StringBuilder builder)
-            {
-                var result = builder.ToString();
-                _cache = builder;
-                return result;
-            }
         }
     }
 }
