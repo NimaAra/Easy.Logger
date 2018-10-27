@@ -15,6 +15,8 @@ Supports _.Net Core_ (_.Net 4_ & _netstandard1.3_) running on:
 * Mono & Xamarin
 
 Details and benchmarks [HERE](http://www.nimaara.com/2016/01/01/high-performance-logging-log4net/).
+
+##### If you enjoy what I build then please <a href="https://www.buymeacoffee.com/sP0BhM9n6" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" width="120px" ></a> :-)
 ___
 
 
