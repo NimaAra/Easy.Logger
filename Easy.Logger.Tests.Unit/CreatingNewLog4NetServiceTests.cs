@@ -19,41 +19,43 @@
         [Test]
         public async Task When_creating_a_log4net_service_with_default_configuration()
         {
-            var extractedApp = ExtractSampleApp();
-            var pathToSampleApp = Path.Combine(extractedApp.FullName, SampleAppName);
-
-            var log4NetConfigFile = new FileInfo(Path.Combine(extractedApp.FullName, "log4net.config"));
-            log4NetConfigFile.Exists.ShouldBeFalse();
-
-            File.WriteAllText(log4NetConfigFile.FullName, GetLog4NetConfiguration(), Encoding.UTF8);
-
-            log4NetConfigFile.Refresh();
-            log4NetConfigFile.Exists.ShouldBeTrue();
-
-            var logFile = new FileInfo(Path.Combine(extractedApp.FullName, LogfileName));
-            logFile.Exists.ShouldBeFalse();
-
-            var errorMessages = new List<string>();
-            using (var process = ProcessHelper.GetProcess(pathToSampleApp, errorMessages))
-            {
-                process.WaitForExit();
-                process.ExitCode.ShouldBe(0);
-
-                logFile.Refresh();
-                logFile.Exists.ShouldBeTrue();
-
-                var entries = File.ReadAllLines(logFile.FullName);
-                entries.Length.ShouldBe(2);
-                entries[0].ShouldContain(" [INFO ] [ 1] Program - I am logging....");
-                entries[1].ShouldContain(" [WARN ] [ 1] Program - I am done logging!");
-            }
-
-            await Task.Delay(TimeSpan.FromSeconds(2));
+            DirectoryInfo extractedApp = null;
             try
             {
-                extractedApp.Delete(true);
+                extractedApp = ExtractSampleApp();
+                var pathToSampleApp = Path.Combine(extractedApp.FullName, SampleAppName);
+
+                var log4NetConfigFile = new FileInfo(Path.Combine(extractedApp.FullName, "log4net.config"));
+                log4NetConfigFile.Exists.ShouldBeFalse();
+
+                File.WriteAllText(log4NetConfigFile.FullName, GetLog4NetConfiguration(), Encoding.UTF8);
+
+                log4NetConfigFile.Refresh();
+                log4NetConfigFile.Exists.ShouldBeTrue();
+
+                var logFile = new FileInfo(Path.Combine(extractedApp.FullName, LogfileName));
+                logFile.Exists.ShouldBeFalse();
+
+                var errorMessages = new List<string>();
+                using (var process = ProcessHelper.GetProcess(pathToSampleApp, errorMessages))
+                {
+                    process.WaitForExit();
+                    process.ExitCode.ShouldBe(0);
+
+                    logFile.Refresh();
+                    logFile.Exists.ShouldBeTrue();
+
+                    var entries = File.ReadAllLines(logFile.FullName);
+                    entries.Length.ShouldBe(2);
+                    entries[0].ShouldContain(" [INFO ] [ 1] Program - I am logging....");
+                    entries[1].ShouldContain(" [WARN ] [ 1] Program - I am done logging!");
+                }
+
+                await Task.Delay(TimeSpan.FromSeconds(2));
+            } finally
+            {
+                extractedApp?.Delete(true);
             }
-            catch { /* ignored */ }
         }
 
         [Test]
