@@ -24,10 +24,12 @@ internal class Program
     {
         public static void ConfigureLogging(WebHostBuilderContext ctx, ILoggingBuilder builder)
         {
-            /* These 2 lines are optional */
-            builder.SetMinimumLevel(LogLevel.Debug);
-            builder.AddConsole();
-            
+            builder.AddConfiguration(ctx.Configuration.GetSection("Logging"));
+            if (ctx.HostingEnvironment.IsDevelopment()) 
+            { 
+                builder.AddConsole(); 
+            }
+
             var logFile = new FileInfo("sample-log4net.config");
             builder.AddProvider(new EasyLoggerProvider(logFile));
         }

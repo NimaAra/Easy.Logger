@@ -30,6 +30,6 @@
         /// <summary>
         /// Disposes the instance.
         /// </summary>
-        public void Dispose() { }
+        public void Dispose() => Log4NetService.Instance.Dispose();
     }
 }
