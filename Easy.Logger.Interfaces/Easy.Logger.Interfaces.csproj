@@ -7,7 +7,7 @@
     <Copyright>2018 Nima Ara</Copyright>
     <PackageTags>log4net;Logging;Easy;Logger;Log;Interfaces</PackageTags>
     <PackageProjectUrl>https://github.com/NimaAra/EasyLogger</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/NimaAra/EasyLogger/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReleaseNotes>-</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/NimaAra/EasyLogger</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
