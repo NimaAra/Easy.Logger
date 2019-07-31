@@ -4,7 +4,7 @@
     <PackageId>Easy.Logger.Extensions</PackageId>
     <Description>Additional features and functionalities to extend Easy.Logger</Description>
     <Authors>Nima Ara</Authors>
-    <Copyright>2018 Nima Ara</Copyright>
+    <Copyright>2019 Nima Ara</Copyright>
     <PackageTags>log4net;Logging;Easy;Logger;Log;Extensions</PackageTags>
     <PackageProjectUrl>https://github.com/NimaAra/EasyLogger</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
