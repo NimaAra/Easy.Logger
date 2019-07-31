@@ -187,7 +187,7 @@
     /// This class used as a container for when an <see cref="System.Exception"/> 
     /// is raised by the <see cref="Sequencer{T}"/>
     /// </summary>
-    public sealed class SequencerExceptionEventArgs : EventArgs
+    internal sealed class SequencerExceptionEventArgs : EventArgs
     {
         /// <summary>
         /// Creates an instance of the <see cref="Sequencer{T}"/>
@@ -204,7 +204,7 @@
     /// <summary>
     /// The <see cref="System.Exception"/> thrown by the <see cref="Sequencer{T}"/>.
     /// </summary>
-    public sealed class SequencerException : Exception
+    internal sealed class SequencerException : Exception
     {
         /// <summary>
         /// Creates an instance of the <see cref="SequencerException"/>.
