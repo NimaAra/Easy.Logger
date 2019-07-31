@@ -15,6 +15,12 @@
         /// <summary>
         /// Creates an instance of the <see cref="EasyLogger"/>.
         /// </summary>
+        // ReSharper disable once UnusedMember.Global
+        public EasyLogger() { }
+
+        /// <summary>
+        /// Creates an instance of the <see cref="EasyLogger"/>.
+        /// </summary>
         /// <param name="easyLogger">An instance of the <see cref="IEasyLogger"/>.</param>
         public EasyLogger(IEasyLogger easyLogger) => _logger = easyLogger;
         
@@ -65,7 +71,7 @@
 
             var message = formatter(state, exception);
 
-            if (string.IsNullOrEmpty(message)) { return; }
+            if (message is null) { return; }
 
             switch (logLevel)
             {
