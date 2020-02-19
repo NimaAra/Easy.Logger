@@ -52,7 +52,7 @@
         public AsyncBufferingForwardingAppender()
         {
             _sequencer = new Sequencer<LoggingEvent[]>(Process);
-            _sequencer.OnException += (sender, args) 
+            _sequencer.OnException += (sender, args)
                 => LogLog.Error(GetType(), "An exception occurred while processing LogEvents.", args.Exception);
         }
 
@@ -66,7 +66,7 @@
             LogWarningIfLossy();
 
             if (IdleTime <= 0) { IdleTime = DEFAULT_IDLE_TIME; }
-            
+
             _idleTimeThreshold = TimeSpan.FromMilliseconds(IdleTime);
             _idleFlushTimer = new Timer(InvokeFlushIfIdle, null, _idleTimeThreshold, _idleTimeThreshold);
         }
@@ -80,7 +80,8 @@
             if (!_sequencer.ShutdownRequested)
             {
                 _sequencer.Enqueue(events);
-            } else
+            }
+            else
             {
                 base.SendBuffer(events);
             }
@@ -91,8 +92,8 @@
         /// </summary>
         protected override void OnClose()
         {
-            _idleFlushTimer.Dispose();
-            _sequencer.Shutdown();
+            _idleFlushTimer?.Dispose();
+            _sequencer?.Shutdown();
 
             Flush();
 
