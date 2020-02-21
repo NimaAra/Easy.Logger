@@ -91,7 +91,7 @@
         /// </summary>
         protected override void OnClose()
         {
-            _idleFlushTimer.Dispose();
+            _idleFlushTimer?.Dispose();
             _sequencer.Shutdown();
 
             Flush();
