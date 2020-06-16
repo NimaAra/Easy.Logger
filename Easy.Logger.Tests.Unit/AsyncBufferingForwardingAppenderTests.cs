@@ -1,4 +1,6 @@
-﻿namespace Easy.Logger.Tests.Unit
+﻿using System;
+
+namespace Easy.Logger.Tests.Unit
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -132,6 +134,56 @@
             loggedEvents[0].Level.ShouldBe(Level.Warn);
             loggedEvents[1].Level.ShouldBe(Level.Error);
             loggedEvents[2].Level.ShouldBe(Level.Fatal);
+        }
+
+        [Test]
+        public async Task When_testing_bounded_capacity()
+        {
+            var forwarder = new AsyncBufferingForwardingAppender
+            {
+                BoundedCapacity = 10,
+                Lossy = true,
+                LossyEvaluator = new LevelEvaluator(Level.Error),
+                Fix = FixFlags.ThreadName | FixFlags.Exception | FixFlags.Message
+            };
+
+            forwarder.BufferSize.ShouldBe(512);
+            forwarder.Lossy.ShouldBeTrue();
+            forwarder.Name.ShouldBeNull();
+            forwarder.Appenders.Count.ShouldBe(0);
+            forwarder.Threshold.ShouldBeNull();
+            forwarder.LossyEvaluator.ShouldBeOfType<LevelEvaluator>();
+            forwarder.BoundedCapacity.ShouldBe(10);
+
+            var loggedEvents = new List<LoggingEvent>();
+            var mockedAppender = new Mock<IAppender>();
+            mockedAppender
+                .Setup(s => s.DoAppend(It.IsAny<LoggingEvent>()))
+                .Callback<LoggingEvent>(loggingEvent => loggedEvents.Add(loggingEvent));
+
+            forwarder.AddAppender(mockedAppender.Object);
+
+            forwarder.ActivateOptions();
+
+            await Task.Delay(1000);
+
+            loggedEvents.Count.ShouldBe(1);
+            loggedEvents[0].LoggerName.ShouldBe("AsyncBufferingForwardingAppender");
+
+            int count = 1000000 - 1;
+
+            for (int i = 0; i < count; i++)
+            {
+                forwarder.DoAppend(new LoggingEvent(new LoggingEventData { Level = Level.Error }));
+            }
+
+            forwarder.GetSequencerBoundedCapacity().ShouldBe(10);
+
+            await Task.Delay(1000);
+
+            forwarder.Close();
+
+            loggedEvents.Count.ShouldBe(count + 1);
         }
     }
 }
