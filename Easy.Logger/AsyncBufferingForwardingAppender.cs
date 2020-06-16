@@ -13,6 +13,7 @@
     public sealed class AsyncBufferingForwardingAppender : BufferingForwardingAppender
     {
         private const int DEFAULT_IDLE_TIME = 500;
+        private const int DEFAULT_BOUNDED_CAPACITY = -1;
 
         private readonly Sequencer<LoggingEvent[]> _sequencer;
 
@@ -46,12 +47,25 @@
         /// </summary>
         public int IdleTime { get; set; } = DEFAULT_IDLE_TIME;
 
+
+        /// <summary>
+        /// Gets or sets the value of <see cref="Sequencer{T}"/> buffer size.
+        /// <value>
+        /// The size of the sequencer buffer used to hold the logging events.
+        /// </value>
+        /// </summary>
+        public int BoundedCapacity { get; set; } = DEFAULT_BOUNDED_CAPACITY;
+
+
         /// <summary>
         /// Creates an instance of the <see cref="AsyncBufferingForwardingAppender"/>
         /// </summary>
         public AsyncBufferingForwardingAppender()
         {
-            _sequencer = new Sequencer<LoggingEvent[]>(Process);
+            _sequencer = BoundedCapacity > 0
+                ? new Sequencer<LoggingEvent[]>(Process, BoundedCapacity)
+                : new Sequencer<LoggingEvent[]>(Process);
+
             _sequencer.OnException += (sender, args) 
                 => LogLog.Error(GetType(), "An exception occurred while processing LogEvents.", args.Exception);
         }
@@ -66,7 +80,7 @@
             LogWarningIfLossy();
 
             if (IdleTime <= 0) { IdleTime = DEFAULT_IDLE_TIME; }
-            
+
             _idleTimeThreshold = TimeSpan.FromMilliseconds(IdleTime);
             _idleFlushTimer = new Timer(InvokeFlushIfIdle, null, _idleTimeThreshold, _idleTimeThreshold);
         }
