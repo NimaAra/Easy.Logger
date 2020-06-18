@@ -141,19 +141,20 @@ namespace Easy.Logger.Tests.Unit
         {
             var forwarder = new AsyncBufferingForwardingAppender
             {
-                BoundedCapacity = 10,
+                BoundedCapacity = 1,
+                BufferSize = 1,
                 Lossy = true,
                 LossyEvaluator = new LevelEvaluator(Level.Error),
                 Fix = FixFlags.ThreadName | FixFlags.Exception | FixFlags.Message
             };
 
-            forwarder.BufferSize.ShouldBe(512);
+            forwarder.BufferSize.ShouldBe(1);
             forwarder.Lossy.ShouldBeTrue();
             forwarder.Name.ShouldBeNull();
             forwarder.Appenders.Count.ShouldBe(0);
             forwarder.Threshold.ShouldBeNull();
             forwarder.LossyEvaluator.ShouldBeOfType<LevelEvaluator>();
-            forwarder.BoundedCapacity.ShouldBe(10);
+            forwarder.BoundedCapacity.ShouldBe(1);
 
             var loggedEvents = new List<LoggingEvent>();
             var mockedAppender = new Mock<IAppender>();
@@ -165,21 +166,16 @@ namespace Easy.Logger.Tests.Unit
 
             forwarder.ActivateOptions();
 
-            await Task.Delay(1000);
+            forwarder.GetSequencerBoundedCapacity().ShouldBe(1);
 
-            loggedEvents.Count.ShouldBe(1);
-            loggedEvents[0].LoggerName.ShouldBe("AsyncBufferingForwardingAppender");
-
-            int count = 1000000 - 1;
+            int count = 1000000;
 
             for (int i = 0; i < count; i++)
             {
                 forwarder.DoAppend(new LoggingEvent(new LoggingEventData { Level = Level.Error }));
             }
 
-            forwarder.GetSequencerBoundedCapacity().ShouldBe(10);
-
-            await Task.Delay(1000);
+            loggedEvents.Count.ShouldBe(count - 1);
 
             forwarder.Close();
 
