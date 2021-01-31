@@ -4,7 +4,7 @@
     <PackageId>Easy.Logger</PackageId>
     <Description>A modern high performance cross platform wrapper around Log4Net.</Description>
     <Authors>Nima Ara</Authors>
-    <Copyright>2020 Nima Ara</Copyright>
+    <Copyright>2021 Nima Ara</Copyright>
     <PackageTags>log4net;Logging;Easy;Logger;Log</PackageTags>
     <PackageProjectUrl>https://github.com/NimaAra/EasyLogger</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
