@@ -4,7 +4,7 @@
     <PackageId>Easy.Logger</PackageId>
     <Description>A modern high performance cross platform wrapper around Log4Net.</Description>
     <Authors>Nima Ara</Authors>
-    <Copyright>2021 Nima Ara</Copyright>
+    <Copyright>2022 Nima Ara</Copyright>
     <PackageTags>log4net;Logging;Easy;Logger;Log</PackageTags>
     <PackageProjectUrl>https://github.com/NimaAra/EasyLogger</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -15,14 +15,14 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.3;net40</TargetFrameworks>
+    <TargetFrameworks>netstandard1.3;net48</TargetFrameworks>
     <AssemblyTitle>Easy Logger</AssemblyTitle>
     <AssemblyName>Easy.Logger</AssemblyName>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="log4net" Version="2.0.12" />
+    <PackageReference Include="log4net" Version="2.0.14" />
     <PackageReference Include="Easy.Logger.Interfaces" Version="1.3.1" />
   </ItemGroup>
   

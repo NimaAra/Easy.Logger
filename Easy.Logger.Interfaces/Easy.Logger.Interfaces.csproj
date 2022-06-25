@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.3;net40</TargetFrameworks>
+    <TargetFrameworks>netstandard1.3;net48</TargetFrameworks>
     <AssemblyTitle>Easy Logger Interfaces</AssemblyTitle>
     <AssemblyName>Easy.Logger.Interfaces</AssemblyName>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
