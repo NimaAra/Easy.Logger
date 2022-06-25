@@ -4,7 +4,7 @@
     <PackageId>Easy.Logger.Interfaces</PackageId>
     <Description>Contains a set of interfaces to be implemented by any logger.</Description>
     <Authors>Nima Ara</Authors>
-    <Copyright>2021 Nima Ara</Copyright>
+    <Copyright>2022 Nima Ara</Copyright>
     <PackageTags>log4net;Logging;Easy;Logger;Log;Interfaces</PackageTags>
     <PackageProjectUrl>https://github.com/NimaAra/EasyLogger</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

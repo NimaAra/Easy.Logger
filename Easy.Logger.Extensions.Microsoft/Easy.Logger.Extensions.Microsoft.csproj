@@ -4,7 +4,7 @@
     <PackageId>Easy.Logger.Extensions.Microsoft</PackageId>
     <Description>Easy.Logger implementation of the Microsoft.Extensions.Logging package which can also be used in ASP.NET Core.</Description>
     <Authors>Nima Ara</Authors>
-    <Copyright>2021 Nima Ara</Copyright>
+    <Copyright>2022 Nima Ara</Copyright>
     <PackageTags>log4net;Logging;Easy;Logger;Log;Microsoft.Extensions.Logging</PackageTags>
     <PackageProjectUrl>https://github.com/NimaAra/EasyLogger</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
