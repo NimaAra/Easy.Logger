@@ -42,7 +42,7 @@
         [Test]
         public void Run()
         {
-            var logger = _logService.GetLogger(GetType());
+            IEasyLogger logger = _logService.GetLogger(GetType());
             logger.Debug("Something is about to happen...");
 
             // Should not be replaced by Task.Delay as
@@ -91,37 +91,32 @@
 
         private static void CheckLogFileContent(FileSystemInfo logFile)
         {
-            var dateTimeRegex = new Regex(@"^\[\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\,\d{3}\]\s\[", RegexOptions.Compiled);
+            Regex dateTimeRegex = new(@"^\[\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\,\d{3}\]\s\[", RegexOptions.Compiled);
 
-            var lines = File.ReadAllLines(logFile.FullName);
-            lines.Length.ShouldBe(10);
+            string[] lines = File.ReadAllLines(logFile.FullName);
+            lines.Length.ShouldBe(9);
 
-            foreach (var line in lines)
+            foreach (string line in lines.Where(x => x != "System.ArgumentNullException: Parameter cannot be null. (Parameter 'cooCoo')"))
             {
-                if (line != "System.ArgumentNullException: Parameter cannot be null."
-                    && line != "Parameter name: cooCoo")
-                {
-                    dateTimeRegex.IsMatch(line).ShouldBeTrue();
-                }
+                dateTimeRegex.IsMatch(line).ShouldBeTrue();
             }
 
             lines[0].ShouldEndWith(" [DEBUG] [NonParallelWorker] [Context] Something is about to happen...");
             lines[1].ShouldEndWith(" [INFO ] [NonParallelWorker] [Context] What's your number? It's: 1234");
             lines[2].ShouldEndWith(" [ERROR] [NonParallelWorker] [Context] Ooops I did it again!");
-            lines[3].ShouldBe("System.ArgumentNullException: Parameter cannot be null.");
-            lines[4].ShouldBe("Parameter name: cooCoo");
-            lines[5].ShouldEndWith(" [FATAL] [NonParallelWorker] [Context] Going home now - System.ApplicationException: CiaoCiao");
-            lines[6].ShouldEndWith(" [DEBUG] [NonParallelWorker] [Context] [Scope 1] This should be inside scope 1.");
-            lines[7].ShouldEndWith(" [WARN ] [NonParallelWorker] [Context] [Scope 1] [Scope 2] This should be inside scope 1 and scope 2. Bar");
-            lines[8].ShouldEndWith(" [ERROR] [NonParallelWorker] [Context] [Scope 1] This should still be inside scope 1.");
-            lines[9].ShouldEndWith(" [FATAL] [NonParallelWorker] [Context] This should not be inside any scope.");
+            lines[3].ShouldBe("System.ArgumentNullException: Parameter cannot be null. (Parameter 'cooCoo')");
+            lines[4].ShouldEndWith(" [FATAL] [NonParallelWorker] [Context] Going home now - System.ApplicationException: CiaoCiao");
+            lines[5].ShouldEndWith(" [DEBUG] [NonParallelWorker] [Context] [Scope 1] This should be inside scope 1.");
+            lines[6].ShouldEndWith(" [WARN ] [NonParallelWorker] [Context] [Scope 1] [Scope 2] This should be inside scope 1 and scope 2. Bar");
+            lines[7].ShouldEndWith(" [ERROR] [NonParallelWorker] [Context] [Scope 1] This should still be inside scope 1.");
+            lines[8].ShouldEndWith(" [FATAL] [NonParallelWorker] [Context] This should not be inside any scope.");
         }
 
         private static void CheckReceivedPayloads(LogPayload[] payloads)
         {
             int pid;
             string processName;
-            using (var p = Process.GetCurrentProcess())
+            using (Process p = Process.GetCurrentProcess())
             {
                 pid = p.Id;
                 processName = p.ProcessName;
@@ -156,7 +151,7 @@
             payloads[2].Sender.ShouldBe("Integration.Tests");
             payloads[2].Entries.Length.ShouldBe(4);
 
-            var allEntries = payloads.SelectMany(p => p.Entries).ToArray();
+            LogEntry[] allEntries = payloads.SelectMany(p => p.Entries).ToArray();
             
             allEntries[0].DateTimeOffset.ShouldBeOfType<DateTimeOffset>();
             allEntries[0].DateTimeOffset.ShouldNotBe(default(DateTimeOffset));
@@ -188,7 +183,7 @@
             allEntries[2].Exception["paramName"].ShouldBe("cooCoo");
             allEntries[2].Exception["stackTrace"].ShouldBeNull();
             allEntries[2].Exception["innerException"].ShouldBeNull();
-            allEntries[2].Exception["message"].ShouldBe("Parameter cannot be null.\r\nParameter name: cooCoo");
+            allEntries[2].Exception["message"].ShouldBe("Parameter cannot be null. (Parameter 'cooCoo')");
             allEntries[2].Exception["source"].ShouldBeNull();
 
             allEntries[3].DateTimeOffset.ShouldBeOfType<DateTimeOffset>();
@@ -236,7 +231,7 @@
 
         private void StartHttpServer()
         {
-            var endpointStr = XDocument.Load(_configFile.FullName)
+            string endpointStr = XDocument.Load(_configFile.FullName)
                 .Descendants()
                 .Elements()
                 .Single(e => e.Attributes().Any(a => a.Name == "name" && a.Value == "HTTPAppender"))
